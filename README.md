@@ -32,11 +32,17 @@ service.start();
 
 Each actor is also an Event Emitter, emitting the following events:
 
+- exchange.created
+- queue.created
+- binding.created
+
+- amqp.connected
+- amqp.disconnected
+
 - message.received
 - message.acked
 - message.nacked
-- amqp.disconnected
-- amqp.connected
+
 - error
 
 ## File System
@@ -58,5 +64,12 @@ sh> bunnies --dir=./actors
 ```
 sh> bunnies -a actors/matcher.js -a actors/rpc.js -a actors/websocket.js
 
+```
+
+```
+sh> bunnies -bind universalgoldtrust|payments|ugt.payments \
+            -queue ugt.payments \
+            -exec process_payments.sh \
+            -cleanup
 ```
 
