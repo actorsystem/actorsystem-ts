@@ -28,6 +28,17 @@ service.start();
 
 ```
 
+## Events
+
+Each actor is also an Event Emitter, emitting the following events:
+
+- message.received
+- message.acked
+- message.nacked
+- amqp.disconnected
+- amqp.connected
+- error
+
 ## File System
 
 Actors are exported as javascript modules. Each module must export an Actor
