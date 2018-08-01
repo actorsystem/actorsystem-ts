@@ -1,0 +1,30 @@
+{
+  "name": "bunnies",
+  "version": "0.1.0",
+  "description": "Microservices Toolchain for RabbitMQ",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevenzeiler/bunnies.git"
+  },
+  "keywords": [
+    "microservices",
+    "rabbitmq",
+    "amqp",
+    "parallelism",
+    "multiprocessor",
+    "concurrency",
+    "nodejs",
+    "library",
+    "tool"
+  ],
+  "author": "Steven Zeiler",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/stevenzeiler/bunnies/issues"
+  },
+  "homepage": "https://github.com/stevenzeiler/bunnies#readme"
+}
