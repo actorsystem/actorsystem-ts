@@ -1,5 +1,5 @@
 
-import { Actor, log } from '../lib';
+import { Actor, log } from '../';
 
 import { connect } from 'amqplib';
 

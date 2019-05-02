@@ -8,18 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const lib_1 = require("../lib");
+const __1 = require("../");
 (() => __awaiter(this, void 0, void 0, function* () {
     // connects to AMQP_URL environment variable
-    let actor = lib_1.Actor.create({
+    let actor = __1.Actor.create({
         exchange: 'orders',
         routingkey: 'ordercreated',
         queue: 'printorderreceipt'
     });
     yield actor.start((channel, msg) => __awaiter(this, void 0, void 0, function* () {
-        lib_1.log.info('print order receipt', msg.content.toString());
+        __1.log.info('print order receipt', msg.content.toString());
         yield channel.ack(msg);
-        lib_1.log.info('message acknowledged', msg.content.toString());
+        __1.log.info('message acknowledged', msg.content.toString());
         setTimeout(() => {
             process.exit(0);
         }, 500);
