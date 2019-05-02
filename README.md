@@ -11,20 +11,41 @@ Each actor consumes messages from a single rabbitmq queue.
 Usage
 
 ```
-import {
-  Actor,
-  amqp
-} from 'bunnies';
+import { Actor, log } from 'bunnies';
 
-let connection = await amqp.connect();
+import { connect } from 'amqplib';
 
-let service = new Actor(connection, {
+(async () => {
 
-  queue: 'potentialmatches'
+  // connects to AMQP_URL environment variable
 
-});
+  let actor = Actor.create({
 
-service.start();
+    exchange: 'orders',
+
+    routingkey: 'ordercreated',
+
+    queue: 'printorderreceipt'
+
+  });
+
+  await actor.start(async (channel, msg) => {
+
+    log.info('print order receipt', msg.content.toString());
+
+    await channel.ack(msg);
+
+    log.info('message acknowledged', msg.content.toString());
+
+  });
+
+  // publish example message with order uid as content
+
+  let buffer = new Buffer('cf9418e8-eb0f-4c7e-88a3-4aca045a30f2');
+
+  await actor.channel.publish('orders', 'ordercreated', buffer);
+
+})();
 
 ```
 

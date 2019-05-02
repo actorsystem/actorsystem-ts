@@ -1,6 +1,6 @@
 {
   "name": "bunnies",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Microservices Toolchain for RabbitMQ",
   "main": "index.js",
   "scripts": {
@@ -26,5 +26,13 @@
   "bugs": {
     "url": "https://github.com/stevenzeiler/bunnies/issues"
   },
-  "homepage": "https://github.com/stevenzeiler/bunnies#readme"
+  "homepage": "https://github.com/stevenzeiler/bunnies#readme",
+  "dependencies": {
+    "@types/amqplib": "^0.5.11",
+    "@types/bluebird": "^3.5.26",
+    "@types/node": "^11.13.8",
+    "@types/winston": "^2.4.4",
+    "amqplib": "^0.5.3",
+    "winston": "^3.2.1"
+  }
 }
