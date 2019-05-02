@@ -9,8 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const amqplib_1 = require("amqplib");
+const events_1 = require("events");
 const logger_1 = require("./logger");
-class Actor {
+class Actor extends events_1.EventEmitter {
     connectAmqp(connection) {
         return __awaiter(this, void 0, void 0, function* () {
             this.connection = connection || (yield amqplib_1.connect(process.env.AMQP_URL));
@@ -25,6 +26,7 @@ class Actor {
         });
     }
     constructor(actorParams) {
+        super();
         this.actorParams = actorParams;
     }
     static create(connectionInfo) {

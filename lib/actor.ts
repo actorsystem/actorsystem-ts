@@ -1,9 +1,11 @@
 
 import { connect, Connection, Channel } from 'amqplib';
 
+import { EventEmitter } from 'events';
+
 import { log } from './logger';
 
-export class Actor {
+export class Actor extends EventEmitter {
 
   connection?: Connection;
 
@@ -38,6 +40,8 @@ export class Actor {
   }
 
   constructor(actorParams: ActorConnectionParams) {
+
+    super();
 
     this.actorParams = actorParams;
 
