@@ -1,12 +1,25 @@
 # Bunnies
 
-Microservices Toolchain for RabbitMQ
+Microservices Actor Toolchain for RabbitMQ
+
+Build more services faster, better and with more smiles.
 
 Extracted out of patterns used in my work on a multitute of live systems.
 
+Simplifies an abstracts the creation of actors that respond to messages received
+via AMQP.
+
+Each actor maintains its own single queue of messages from which it pulls and
+reacts to messages.
+
+Sane defaults for managing amqp state make previously tedious code warm and
+fuzzy, like a bunny.
+
 ## Library
 
-Each actor consumes messages from a single rabbitmq queue.
+Each actor consumes messages from a single rabbitmq queue. On startup the
+actor will establish connection with your AMQP server, assert the specified
+exchange and queue, and bind the queue to the exchange with the routing key.
 
 Usage
 
@@ -48,6 +61,33 @@ import { connect } from 'amqplib';
 })();
 
 ```
+
+#### Re-Using An Existing AMQP Connection
+
+It may not be idea to connect a separate TCP socket for every single actor.
+Instead, optionally provide an `amqp.Connection` when creating Actor.
+
+```
+
+import { connect, Connection } from 'amqplib';
+
+let connection: Connection = await connect();
+
+let actor = Actor.create({
+  
+  exchange,
+
+  routingkey,
+
+  queue,
+
+  connection
+
+})
+```
+
+The above will still create a new channel but will re-use the existing
+connection.
 
 ## Events
 
