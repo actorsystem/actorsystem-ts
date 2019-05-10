@@ -15,7 +15,7 @@ export class Actor extends EventEmitter {
 
   actorParams: ActorConnectionParams;
 
-  toJSON() {
+  toJSON(): any {
 
     return {
 
@@ -78,9 +78,11 @@ export class Actor extends EventEmitter {
 
   async defaultConsumer(channel, msg) {
 
-    let tag = `${this.actorParams.exchange}|${this.actorParams.routingkey}|${this.actorParams.queue}`;
+    let json = this.toJSON();
 
-    log.info(tag, msg.content.toString());
+    json.message = msg.content.toString();
+
+    log.info(json);
 
     await channel.ack(msg);
 

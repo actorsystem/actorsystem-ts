@@ -46,8 +46,9 @@ class Actor extends events_1.EventEmitter {
     }
     defaultConsumer(channel, msg) {
         return __awaiter(this, void 0, void 0, function* () {
-            let tag = `${this.actorParams.exchange}|${this.actorParams.routingkey}|${this.actorParams.queue}`;
-            logger_1.log.info(tag, msg.content.toString());
+            let json = this.toJSON();
+            json.message = msg.content.toString();
+            logger_1.log.info(json);
             yield channel.ack(msg);
         });
     }
