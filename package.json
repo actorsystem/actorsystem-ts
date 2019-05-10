@@ -1,6 +1,6 @@
 {
   "name": "bunnies",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Microservices Toolchain for RabbitMQ",
   "main": "dist/index.js",
   "scripts": {
