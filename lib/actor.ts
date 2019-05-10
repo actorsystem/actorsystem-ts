@@ -5,29 +5,51 @@ import { EventEmitter } from 'events';
 
 import { log } from './logger';
 
+import { getConnection } from './amqp';
+
 export class Actor extends EventEmitter {
 
-  connection?: Connection;
+  connection?: any;
 
   channel?: Channel;
 
   actorParams: ActorConnectionParams;
 
-  async connectAmqp(connection?: Connection) {
+  toJSON() {
 
-    this.connection = connection || await connect(process.env.AMQP_URL);
+    return {
 
-    log.info('amqp.channel.connected');
+      exchange: this.actorParams.exchange,
+
+      routingkey: this.actorParams.routingkey,
+
+      queue: this.actorParams.queue
+
+    };
+
+  }
+
+  async connectAmqp(connection?: any) {
+
+    if (connection) {
+
+      this.connection = connection;
+
+    } else {
+
+      this.connection = await getConnection();
+
+    }
 
     this.channel = await this.connection.createChannel();
 
-    log.info('amqp.channel.created');
+    log.info('bunnies.amqp.channel.created');
 
     await this.channel.assertExchange(this.actorParams.exchange, 'direct');
 
     await this.channel.assertQueue(this.actorParams.queue);
 
-    log.info('bind actor to amqp', this.actorParams);
+    log.info('bunnies.amqp.binding.created', this.toJSON());
 
     await this.channel.bindQueue(
       this.actorParams.queue,
@@ -54,13 +76,32 @@ export class Actor extends EventEmitter {
     return actor;
   }
 
-  async start(consumer) {
+  async defaultConsumer(channel, msg) {
+
+    let tag = `${this.actorParams.exchange}|${this.actorParams.routingkey}|${this.actorParams.queue}`;
+
+    log.info(tag, msg.content.toString());
+
+    await channel.ack(msg);
+
+  }
+
+  async start(consumer?: (channel: any, msg: any) => Promise<void>) {
 
     let channel = await this.connectAmqp(this.actorParams.connection);
 
-    channel.consume(this.actorParams.queue, function(msg) {
+    channel.consume(this.actorParams.queue, (msg) => {
 
-      consumer(channel, msg);
+      if (consumer) {
+
+        consumer(channel, msg);
+
+      } else {
+
+        this.defaultConsumer(channel, msg);
+
+      }
+
 
     });
 

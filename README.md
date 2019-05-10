@@ -15,6 +15,26 @@ reacts to messages.
 Sane defaults for managing amqp state make previously tedious code warm and
 fuzzy, like a bunny.
 
+## Architecture
+
+According to AMQP best practices bunnies will connect a single socket to
+the AMQP server provided by the AMQP_URL environment variable. This singleton
+connection is used automatically when starting all actors, unless another
+connection is specified explicitly.
+
+You can also get a handle on the singleton connection by running
+
+```
+import { getConnection } from 'bunnies';
+
+let connection = await getConnection();
+
+```
+
+`getConnection` will always return a single connection reused by all callers in
+a given process.
+
+
 ## Library
 
 Each actor consumes messages from a single rabbitmq queue. On startup the

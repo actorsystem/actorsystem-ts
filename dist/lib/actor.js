@@ -8,19 +8,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const amqplib_1 = require("amqplib");
 const events_1 = require("events");
 const logger_1 = require("./logger");
+const amqp_1 = require("./amqp");
 class Actor extends events_1.EventEmitter {
+    toJSON() {
+        return {
+            exchange: this.actorParams.exchange,
+            routingkey: this.actorParams.routingkey,
+            queue: this.actorParams.queue
+        };
+    }
     connectAmqp(connection) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.connection = connection || (yield amqplib_1.connect(process.env.AMQP_URL));
-            logger_1.log.info('amqp.channel.connected');
+            if (connection) {
+                this.connection = connection;
+            }
+            else {
+                this.connection = yield amqp_1.getConnection();
+            }
             this.channel = yield this.connection.createChannel();
-            logger_1.log.info('amqp.channel.created');
+            logger_1.log.info('bunnies.amqp.channel.created');
             yield this.channel.assertExchange(this.actorParams.exchange, 'direct');
             yield this.channel.assertQueue(this.actorParams.queue);
-            logger_1.log.info('bind actor to amqp', this.actorParams);
+            logger_1.log.info('bunnies.amqp.binding.created', this.toJSON());
             yield this.channel.bindQueue(this.actorParams.queue, this.actorParams.exchange, this.actorParams.routingkey);
             return this.channel;
         });
@@ -33,11 +44,23 @@ class Actor extends events_1.EventEmitter {
         let actor = new Actor(connectionInfo);
         return actor;
     }
+    defaultConsumer(channel, msg) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let tag = `${this.actorParams.exchange}|${this.actorParams.routingkey}|${this.actorParams.queue}`;
+            logger_1.log.info(tag, msg.content.toString());
+            yield channel.ack(msg);
+        });
+    }
     start(consumer) {
         return __awaiter(this, void 0, void 0, function* () {
             let channel = yield this.connectAmqp(this.actorParams.connection);
-            channel.consume(this.actorParams.queue, function (msg) {
-                consumer(channel, msg);
+            channel.consume(this.actorParams.queue, (msg) => {
+                if (consumer) {
+                    consumer(channel, msg);
+                }
+                else {
+                    this.defaultConsumer(channel, msg);
+                }
             });
         });
     }
