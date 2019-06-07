@@ -32,6 +32,7 @@
     "@types/bluebird": "^3.5.26",
     "@types/node": "^11.13.8",
     "@types/winston": "^2.4.4",
+    "amqp-connection-manager": "^2.3.2",
     "amqplib": "^0.5.3",
     "dotenv": "^8.0.0",
     "superagent": "^5.0.5",

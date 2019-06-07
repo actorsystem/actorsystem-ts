@@ -1,5 +1,5 @@
 
-import {connect, Connection} from 'amqplib';
+import {connect, Connection} from 'amqp-connection-manager';
 
 import { log } from './logger';
 

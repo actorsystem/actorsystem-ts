@@ -23,6 +23,12 @@
   dependencies:
     winston "*"
 
+amqp-connection-manager@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/amqp-connection-manager/-/amqp-connection-manager-2.3.2.tgz#5fca51752fb2e9d1261e210066ae97145ff6eb81"
+  dependencies:
+    promise-breaker "^4.1.2"
+
 amqplib@^0.5.3:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/amqplib/-/amqplib-0.5.3.tgz#7ccfc85d12ee7cd3c6dc861bb07f0648ec3d7193"
@@ -252,6 +258,10 @@ one-time@0.0.4:
 process-nextick-args@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.0.tgz#a37d732f4271b4ab1ad070d35508e8290788ffaa"
+
+promise-breaker@^4.1.2:
+  version "4.1.13"
+  resolved "https://registry.yarnpkg.com/promise-breaker/-/promise-breaker-4.1.13.tgz#fe57ad0a1f14912682942391de1e6a2b4e2e447b"
 
 qs@^6.7.0:
   version "6.7.0"

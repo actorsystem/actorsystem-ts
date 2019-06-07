@@ -1,5 +1,5 @@
 
-import { connect, Connection, Channel } from 'amqplib';
+import { Connection, Channel } from 'amqplib';
 
 import { EventEmitter } from 'events';
 
