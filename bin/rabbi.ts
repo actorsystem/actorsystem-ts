@@ -8,7 +8,7 @@ var path = require('path');
 
 var mkdirp = require('mkdirp');
 
-import * as cp from 'cp-file';
+var cp = require('cp-file');
 
 program
   .command('start [actorsDirectory]')
