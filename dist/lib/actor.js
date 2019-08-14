@@ -25,6 +25,7 @@ class Actor extends events_1.EventEmitter {
                 this.connection = connection;
             }
             else {
+                console.log('GET CONNECTION');
                 this.connection = yield amqp_1.getConnection();
             }
             this.channel = yield this.connection.createChannel();
@@ -54,6 +55,7 @@ class Actor extends events_1.EventEmitter {
     }
     start(consumer) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('START');
             let channel = yield this.connectAmqp(this.actorParams.connection);
             channel.consume(this.actorParams.queue, (msg) => {
                 if (consumer) {

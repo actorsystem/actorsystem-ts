@@ -37,6 +37,8 @@ export class Actor extends EventEmitter {
 
     } else {
 
+      console.log('GET CONNECTION');
+
       this.connection = await getConnection();
 
     }
@@ -89,6 +91,8 @@ export class Actor extends EventEmitter {
   }
 
   async start(consumer?: (channel: any, msg: any) => Promise<void>) {
+
+    console.log('START');
 
     let channel = await this.connectAmqp(this.actorParams.connection);
 

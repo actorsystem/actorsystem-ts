@@ -1,3 +1,15 @@
+
+# Rabbi
+
+Microservices Controller for RabbitMQ
+
+```
+import { startActorsDirectory } from 'rabbi';
+
+startActorsDirectory(path.join(__dirname, 'actors'));
+
+```
+
 # Bunnies
 
 Microservices Actor Toolchain for RabbitMQ

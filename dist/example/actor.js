@@ -20,9 +20,13 @@ const __1 = require("../");
         __1.log.info('print order receipt', msg.content.toString());
         yield channel.ack(msg);
         __1.log.info('message acknowledged', msg.content.toString());
+        /*
         setTimeout(() => {
-            process.exit(0);
+    
+          //process.exit(0);
+    
         }, 500);
+        */
     }));
     // publish example message with order uid as content
     let buffer = new Buffer('cf9418e8-eb0f-4c7e-88a3-4aca045a30f2');

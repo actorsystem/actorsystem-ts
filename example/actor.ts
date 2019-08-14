@@ -25,11 +25,13 @@ import { connect } from 'amqplib';
 
     log.info('message acknowledged', msg.content.toString());
 
+    /*
     setTimeout(() => {
 
-      process.exit(0);
+      //process.exit(0);
 
     }, 500);
+    */
 
   });
 
