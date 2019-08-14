@@ -4,7 +4,7 @@
   "description": "Microservices Toolchain for RabbitMQ",
   "main": "dist/rabbi.js",
   "bin": {
-    "rabbi": "./bin/rabbit.js"
+    "rabbi": "./bin/rabbi.ts"
   },
   "scripts": {
     "test": "npm test"
