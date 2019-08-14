@@ -4,9 +4,36 @@
 Microservices Controller for RabbitMQ
 
 ```
+## Installation
+
+Typescript and `ts-node` are required in your PATH to run rabbi apps. 
+
+```
+npm install -g rabbi
+
+```
+
+## Basic Usage
+
+Rabbi uses a directory and file naming convention to speed up writing and
+deploying new apps based on the reactive messaging and actor model.
+
+
+### Command Line
+
+All actors should be under directories such as `./actors/{actor_name}/actor.ts`.
+
+```
+/my/app/directory> rabbi start
+```
+
+### Programmatic Use
+
+All actors should be under directories such as `./{actor_name}/actor.ts`.
+
 import { startActorsDirectory } from 'rabbi';
 
-startActorsDirectory(path.join(__dirname, 'actors'));
+startActorsDirectory(__dirname);
 
 ```
 
