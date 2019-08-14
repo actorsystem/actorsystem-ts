@@ -1,6 +1,6 @@
 {
   "name": "rabbi",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Microservices Toolchain for RabbitMQ",
   "main": "dist/lib/rabbi.js",
   "bin": {
