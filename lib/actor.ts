@@ -1,11 +1,13 @@
 
-import { connect, Connection, Channel } from 'amqplib';
+import { connect, Connection, Channel, Message } from 'amqplib';
 
 import { EventEmitter } from 'events';
 
 import { log } from './logger';
 
 import { getConnection } from './amqp';
+
+import * as Joi from 'joi';
 
 export class Actor extends EventEmitter {
 
@@ -14,6 +16,8 @@ export class Actor extends EventEmitter {
   channel?: Channel;
 
   actorParams: ActorConnectionParams;
+
+  schema: Joi.Schema;
 
   toJSON(): any {
 
@@ -78,33 +82,57 @@ export class Actor extends EventEmitter {
     return actor;
   }
 
-  async defaultConsumer(channel, msg) {
+  async defaultConsumer(channel: Channel, msg: Message, json?: any) {
 
-    let json = this.toJSON();
+    let message = this.toJSON();
 
-    json.message = msg.content.toString();
+    message.message = msg.content.toString();
 
-    log.info(json);
+    log.info(message);
 
     await channel.ack(msg);
 
   }
 
-  async start(consumer?: (channel: any, msg: any) => Promise<void>) {
+  async start(consumer?: (channel: any, msg: any, json?: any) => Promise<void>) {
 
     console.log('START');
+
+    var json;
 
     let channel = await this.connectAmqp(this.actorParams.connection);
 
     channel.consume(this.actorParams.queue, (msg) => {
 
+      try {
+
+        json = JSON.parse(msg.content.toString());
+
+      } catch(error) {
+
+      }
+
+      if (this.schema) {
+
+        let result = this.schema.validate(json);
+
+        if (result.error) {
+
+          log.error('schema.invalid', result.error);
+
+          return channel.ack(msg);
+  
+        }
+
+      }
+
       if (consumer) {
 
-        consumer(channel, msg);
+        consumer(channel, msg, json);
 
       } else {
 
-        this.defaultConsumer(channel, msg);
+        this.defaultConsumer(channel, msg, json);
 
       }
 
@@ -124,6 +152,8 @@ export interface ActorConnectionParams {
   queue: string;
 
   connection?: Connection
+
+  schema?: Joi.Schema
 
 }
 

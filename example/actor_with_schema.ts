@@ -1,7 +1,7 @@
 
-import { Actor, log } from '../lib/rabbi';
+import { Actor, log, Joi } from '../lib/rabbi';
 
-import { connect } from 'amqplib';
+import * as amqp from 'amqplib';
 
 (async () => {
 
@@ -13,17 +13,27 @@ import { connect } from 'amqplib';
 
     routingkey: 'ordercreated',
 
-    queue: 'printorderreceipt'
+    queue: 'printorderreceipt',
+
+    schema: Joi.object().keys({
+
+      order_id: Joi.number().integer().required(),
+
+      memo: Joi.string()
+
+    })
 
   });
 
-  await actor.start(async (channel, msg) => {
+  await actor.start(async (channel: amqp.Channel, msg: amqp.Message, json) => {
 
     log.info('print order receipt', msg.content.toString());
 
     await channel.ack(msg);
 
     log.info('message acknowledged', msg.content.toString());
+
+    log.info('json parsed', json);
 
     /*
     setTimeout(() => {
@@ -37,7 +47,13 @@ import { connect } from 'amqplib';
 
   // publish example message with order uid as content
 
-  let buffer = new Buffer('cf9418e8-eb0f-4c7e-88a3-4aca045a30f2');
+  let buffer = new Buffer(JSON.stringify({
+
+    order_id: 1324345,
+
+    memo: '2 skinny scouts',
+
+  }));
 
   await actor.channel.publish('orders', 'ordercreated', buffer);
 
