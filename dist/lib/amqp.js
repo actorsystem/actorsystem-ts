@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const amqp_connection_manager_1 = require("amqp-connection-manager");
+const amqplib_1 = require("amqplib");
 const waitPort = require("wait-port");
 const url = require("url");
 const logger_1 = require("./logger");
@@ -28,7 +28,7 @@ function getConnection() {
                 host: parsed.hostname,
                 port: parseInt(parsed.port)
             });
-            connection = yield amqp_connection_manager_1.connect(AMQP_URL);
+            connection = yield amqplib_1.connect(AMQP_URL);
             connecting = false;
             logger_1.log.info('bunnies.amqp.connected');
         }

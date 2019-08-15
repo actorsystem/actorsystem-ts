@@ -10,6 +10,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const path = require("path");
+const actor_1 = require("./actor");
+exports.Actor = actor_1.Actor;
+const logger_1 = require("./logger");
+exports.log = logger_1.log;
+const amqp_1 = require("./amqp");
+exports.getConnection = amqp_1.getConnection;
+const Joi = require("joi");
+exports.Joi = Joi;
 function getDirectories(source) {
     return fs.readdirSync(source, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())

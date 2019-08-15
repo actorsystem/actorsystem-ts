@@ -14,12 +14,17 @@ const rabbi_1 = require("../lib/rabbi");
     let actor = rabbi_1.Actor.create({
         exchange: 'orders',
         routingkey: 'ordercreated',
-        queue: 'printorderreceipt'
+        queue: 'printorderreceipt',
+        schema: rabbi_1.Joi.object().keys({
+            order_id: rabbi_1.Joi.number().integer().required(),
+            memo: rabbi_1.Joi.string()
+        })
     });
-    yield actor.start((channel, msg) => __awaiter(this, void 0, void 0, function* () {
+    yield actor.start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
         rabbi_1.log.info('print order receipt', msg.content.toString());
         yield channel.ack(msg);
         rabbi_1.log.info('message acknowledged', msg.content.toString());
+        rabbi_1.log.info('json parsed', json);
         /*
         setTimeout(() => {
     
@@ -29,7 +34,10 @@ const rabbi_1 = require("../lib/rabbi");
         */
     }));
     // publish example message with order uid as content
-    let buffer = new Buffer('cf9418e8-eb0f-4c7e-88a3-4aca045a30f2');
+    let buffer = new Buffer(JSON.stringify({
+        order_id: 1324345,
+        memo: '2 skinny scouts',
+    }));
     yield actor.channel.publish('orders', 'ordercreated', buffer);
 }))();
-//# sourceMappingURL=actor.js.map
+//# sourceMappingURL=actor_with_schema.js.map

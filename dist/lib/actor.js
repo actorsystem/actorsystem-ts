@@ -45,24 +45,37 @@ class Actor extends events_1.EventEmitter {
         let actor = new Actor(connectionInfo);
         return actor;
     }
-    defaultConsumer(channel, msg) {
+    defaultConsumer(channel, msg, json) {
         return __awaiter(this, void 0, void 0, function* () {
-            let json = this.toJSON();
-            json.message = msg.content.toString();
-            logger_1.log.info(json);
+            let message = this.toJSON();
+            message.message = msg.content.toString();
+            logger_1.log.info(message);
             yield channel.ack(msg);
         });
     }
     start(consumer) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('START');
+            var json;
             let channel = yield this.connectAmqp(this.actorParams.connection);
             channel.consume(this.actorParams.queue, (msg) => {
+                try {
+                    json = JSON.parse(msg.content.toString());
+                }
+                catch (error) {
+                }
+                if (this.schema) {
+                    let result = this.schema.validate(json);
+                    if (result.error) {
+                        logger_1.log.error('schema.invalid', result.error);
+                        return channel.ack(msg);
+                    }
+                }
                 if (consumer) {
-                    consumer(channel, msg);
+                    consumer(channel, msg, json);
                 }
                 else {
-                    this.defaultConsumer(channel, msg);
+                    this.defaultConsumer(channel, msg, json);
                 }
             });
         });
