@@ -41,8 +41,6 @@ export class Actor extends EventEmitter {
 
     } else {
 
-      console.log('GET CONNECTION');
-
       this.connection = await getConnection();
 
     }
@@ -90,19 +88,15 @@ export class Actor extends EventEmitter {
 
     log.info(message);
 
-    await channel.ack(msg);
-
   }
 
   async start(consumer?: (channel: any, msg: any, json?: any) => Promise<void>) {
-
-    console.log('START');
 
     var json;
 
     let channel = await this.connectAmqp(this.actorParams.connection);
 
-    channel.consume(this.actorParams.queue, (msg) => {
+    channel.consume(this.actorParams.queue, async (msg) => {
 
       try {
 
@@ -128,7 +122,17 @@ export class Actor extends EventEmitter {
 
       if (consumer) {
 
-        consumer(channel, msg, json);
+        try {
+
+          let result = await consumer(channel, msg, json);
+
+        } catch(error) {
+
+          console.error('rabbi.exception.caught', error.message);
+
+          await channel.nack(msg, false, false); // deadletter or discard
+
+        }
 
       } else {
 

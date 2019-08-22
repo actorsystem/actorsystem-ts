@@ -1,4 +1,5 @@
 #!/usr/bin/env ts-node
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -7,18 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var program = require('commander');
+Object.defineProperty(exports, "__esModule", { value: true });
+const program = require("commander");
 var rabbi = require('../dist/lib/rabbi');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var cp = require('cp-file');
 program
-    .command('start [actorsDirectory]')
-    .action((actorsDirectory) => __awaiter(this, void 0, void 0, function* () {
-    if (!actorsDirectory) {
-        actorsDirectory = path.join(process.cwd(), 'actors');
-        rabbi.startActorsDirectory(actorsDirectory);
-    }
+    .command('start [directory]')
+    .action((directory = "actors") => __awaiter(this, void 0, void 0, function* () {
+    let actorsDirectory = path.join(process.cwd(), directory);
+    rabbi.startActorsDirectory(actorsDirectory);
 }));
 program
     .command('actor <actor_name>')

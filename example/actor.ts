@@ -19,6 +19,8 @@ import { connect } from 'amqplib';
 
   await actor.start(async (channel, msg) => {
 
+    console.log(msg);
+
     log.info('print order receipt', msg.content.toString());
 
     await channel.ack(msg);

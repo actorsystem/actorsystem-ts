@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require('dotenv').config();
 const fs = require("fs");
 const path = require("path");
 const actor_1 = require("./actor");
@@ -24,6 +25,8 @@ function getDirectories(source) {
         .map(dirent => dirent.name);
 }
 exports.getDirectories = getDirectories;
+const delay = require("delay");
+exports.delay = delay;
 function startActorsDirectory(directoryIndexPath) {
     return __awaiter(this, void 0, void 0, function* () {
         let directories = getDirectories(directoryIndexPath);

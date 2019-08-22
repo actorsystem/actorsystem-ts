@@ -25,7 +25,6 @@ class Actor extends events_1.EventEmitter {
                 this.connection = connection;
             }
             else {
-                console.log('GET CONNECTION');
                 this.connection = yield amqp_1.getConnection();
             }
             this.channel = yield this.connection.createChannel();
@@ -50,15 +49,13 @@ class Actor extends events_1.EventEmitter {
             let message = this.toJSON();
             message.message = msg.content.toString();
             logger_1.log.info(message);
-            yield channel.ack(msg);
         });
     }
     start(consumer) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('START');
             var json;
             let channel = yield this.connectAmqp(this.actorParams.connection);
-            channel.consume(this.actorParams.queue, (msg) => {
+            channel.consume(this.actorParams.queue, (msg) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     json = JSON.parse(msg.content.toString());
                 }
@@ -72,12 +69,18 @@ class Actor extends events_1.EventEmitter {
                     }
                 }
                 if (consumer) {
-                    consumer(channel, msg, json);
+                    try {
+                        let result = yield consumer(channel, msg, json);
+                    }
+                    catch (error) {
+                        console.error('rabbi.exception.caught', error.message);
+                        yield channel.nack(msg, false, false); // deadletter or discard
+                    }
                 }
                 else {
                     this.defaultConsumer(channel, msg, json);
                 }
-            });
+            }));
         });
     }
 }

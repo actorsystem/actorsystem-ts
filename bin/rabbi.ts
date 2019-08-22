@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-var program = require('commander');
+import * as program from 'commander';
 
 var rabbi = require('../dist/lib/rabbi');
 
@@ -11,16 +11,12 @@ var mkdirp = require('mkdirp');
 var cp = require('cp-file');
 
 program
-  .command('start [actorsDirectory]')
-  .action(async (actorsDirectory) => {
+  .command('start [directory]')
+  .action(async (directory="actors") => {
 
-    if (!actorsDirectory) {
+    let actorsDirectory = path.join(process.cwd(), directory);
 
-      actorsDirectory = path.join(process.cwd(), 'actors');
-
-      rabbi.startActorsDirectory(actorsDirectory);
-      
-    }
+    rabbi.startActorsDirectory(actorsDirectory);
 
   });
 

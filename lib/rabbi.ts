@@ -1,3 +1,4 @@
+require('dotenv').config();
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -16,10 +17,13 @@ export function getDirectories(source) {
     .map(dirent => dirent.name)
 }
 
+import * as delay from 'delay';
+
 export {
   Actor,
   log,
   getConnection,
+  delay,
   Joi
 }
 
