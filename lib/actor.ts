@@ -130,7 +130,7 @@ export class Actor extends EventEmitter {
 
           console.error('rabbi.exception.caught', error.message);
 
-          await channel.nack(msg, false, false); // deadletter or discard
+          await channel.ack(msg); // auto acknowledge
 
         }
 

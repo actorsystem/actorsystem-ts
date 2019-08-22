@@ -74,7 +74,7 @@ class Actor extends events_1.EventEmitter {
                     }
                     catch (error) {
                         console.error('rabbi.exception.caught', error.message);
-                        yield channel.nack(msg, false, false); // deadletter or discard
+                        yield channel.ack(msg); // auto acknowledge
                     }
                 }
                 else {
