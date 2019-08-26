@@ -2,22 +2,26 @@
 
 require('dotenv').config();
 
-import { Actor } from 'bunnies';
+import { Actor, Joi, log } from 'rabbi';
 
 export async function start() {
 
   Actor.create({
 
-    exchange: '',
+    exchange: 'rabbi',
 
     routingkey: '',
 
-    queue: ''
+    queue: '',
+
+    schema: Joi.object() // optional, enforces validity of json schema
 
   })
-  .start(async (channel, msg) => {
+  .start(async (channel, msg, json) => {
 
-    console.log(msg.content.toString());
+    log.info(msg.content.toString());
+
+    log.info(json);
 
     channel.ack(msg);
 
