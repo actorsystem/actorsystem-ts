@@ -3,6 +3,8 @@ require('dotenv').config();
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { reject, reduce } from 'lodash';
+
 import { Actor } from './actor';
 
 import { log } from './logger';
@@ -27,11 +29,26 @@ export {
   Joi
 }
 
-export async function startActorsDirectory(directoryIndexPath: string) {
+interface StartActorsDirectoryOpts {
+  exclude: string[];
+}
+
+interface ActorHandle {
+  path: string,
+  name: string,
+  actor?: Actor
+}
+
+export async function startActorsDirectory(directoryIndexPath: string,
+  opts: StartActorsDirectoryOpts = {
+    exclude: []
+  }): Promise<ActorHandle[]> {
 
   let directories = getDirectories(directoryIndexPath);
 
-  let actors = directories.map(directory => {
+  var tmpHandle: ActorHandle;
+
+  let actors: ActorHandle[] = directories.map(directory => {
 
     var dir = path.join(directoryIndexPath, directory);
 
@@ -39,20 +56,44 @@ export async function startActorsDirectory(directoryIndexPath: string) {
 
       if (file === 'actor.ts') {
 
-        actorFile = path.join(dir, file);
+        let a = path.join(dir, file);
+
+        return {
+          path: a,
+          name: directory
+        }
+
       }
 
-      return actorFile;
-
-    }, null);
+    }, tmpHandle);
 
   });
 
-  actors.forEach(actor => {
+  let shouldExclude = buildShouldExclude(opts.exclude);
 
-    require(actor).start();
+  actors = reject(actors, actor => shouldExclude(actor.name));
 
-  });
+  actors.forEach(actor => require(actor.path).start());
+
+  return actors; 
+
+}
+
+function buildShouldExclude(excludeOpts: any[]) {
+
+  let exclusions = reduce(excludeOpts, (exclusions, actorName) => {
+
+    exclusions[actorName] = true;
+
+    return exclusions;
+
+  }, {});
+
+  return function(actorName) {
+
+    return exclusions[actorName];
+
+  }
 
 }
 

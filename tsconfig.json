@@ -11,7 +11,9 @@
 		"sourceRoot": "."
   },
   "exclude": [
+    "templates",
     "node_modules",
-    "dist"
+    "dist",
+    "test"
   ]
 }

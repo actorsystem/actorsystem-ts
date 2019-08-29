@@ -10,16 +10,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
-const bunnies_1 = require("bunnies");
+const __1 = require("../../../");
 function start() {
     return __awaiter(this, void 0, void 0, function* () {
-        bunnies_1.Actor.create({
-            exchange: '',
+        __1.Actor.create({
+            exchange: 'rabbi',
             routingkey: '',
-            queue: ''
+            queue: '',
+            schema: __1.Joi.object() // optional, enforces validity of json schema
         })
-            .start((channel, msg) => __awaiter(this, void 0, void 0, function* () {
-            console.log(msg.content.toString());
+            .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
+            __1.log.info(msg.content.toString());
+            __1.log.info(json);
             channel.ack(msg);
         }));
     });

@@ -11,12 +11,36 @@ var mkdirp = require('mkdirp');
 var cp = require('cp-file');
 
 program
-  .command('start [directory]')
-  .action(async (directory="actors") => {
+  .command('start')
+  .option('-e, --exclude [exclude]', 'List of actors to exclude')
+  .option('-d, --directory [directory]', 'Path to directory')
+  .action(async (args) => {
 
-    let actorsDirectory = path.join(process.cwd(), directory);
+    var directory;
 
-    rabbi.startActorsDirectory(actorsDirectory);
+    if (args.directory) {
+
+      if (args.directory.match(/^\//)) {
+
+        directory = args.directory;
+
+      } else {
+
+        directory = path.join(process.cwd(), args.directory);
+
+      }
+
+    } else {
+
+      directory  = path.join(process.cwd(), directory);
+  
+    }
+
+    rabbi.startActorsDirectory(directory, {
+
+      exclude: args.exclude.split(',')
+
+    });
 
   });
 

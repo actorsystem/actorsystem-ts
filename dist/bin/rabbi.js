@@ -15,10 +15,25 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var cp = require('cp-file');
 program
-    .command('start [directory]')
-    .action((directory = "actors") => __awaiter(this, void 0, void 0, function* () {
-    let actorsDirectory = path.join(process.cwd(), directory);
-    rabbi.startActorsDirectory(actorsDirectory);
+    .command('start')
+    .option('-e, --exclude [exclude]', 'List of actors to exclude')
+    .option('-d, --directory [directory]', 'Path to directory')
+    .action((args) => __awaiter(this, void 0, void 0, function* () {
+    var directory;
+    if (args.directory) {
+        if (args.directory.match(/^\//)) {
+            directory = args.directory;
+        }
+        else {
+            directory = path.join(process.cwd(), args.directory);
+        }
+    }
+    else {
+        directory = path.join(process.cwd(), directory);
+    }
+    rabbi.startActorsDirectory(directory, {
+        exclude: args.exclude.split(',')
+    });
 }));
 program
     .command('actor <actor_name>')

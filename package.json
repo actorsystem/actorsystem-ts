@@ -1,6 +1,6 @@
 {
   "name": "rabbi",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "Microservices Toolchain for RabbitMQ",
   "main": "dist/lib/rabbi.js",
   "bin": {
@@ -41,6 +41,8 @@
     "delay": "^4.3.0",
     "dotenv": "^8.0.0",
     "joi": "^14.3.1",
+    "lodash": "^4.17.15",
+    "lodash.reject": "^4.6.0",
     "mkdirp": "^0.5.1",
     "mocha": "^6.2.0",
     "superagent": "^5.0.5",
