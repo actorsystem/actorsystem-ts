@@ -44,8 +44,12 @@ function startActorsDirectory(directoryIndexPath, opts = {
                         name: directory
                     };
                 }
+                else {
+                    return actorFile;
+                }
             }, tmpHandle);
         });
+        actors = lodash_1.reject(actors, a => !a);
         let shouldExclude = buildShouldExclude(opts.exclude);
         actors = lodash_1.reject(actors, actor => shouldExclude(actor.name));
         actors.forEach(actor => require(actor.path).start());

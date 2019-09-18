@@ -63,11 +63,16 @@ export async function startActorsDirectory(directoryIndexPath: string,
           name: directory
         }
 
+      } else {
+
+        return actorFile;
       }
 
     }, tmpHandle);
 
   });
+
+  actors = reject(actors, a => !a);
 
   let shouldExclude = buildShouldExclude(opts.exclude);
 
