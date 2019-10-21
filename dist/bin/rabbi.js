@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const program = require("commander");
-var rabbi = require('../dist/lib/rabbi');
+var rabbi = require('../lib/rabbi');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var cp = require('cp-file');
@@ -37,7 +37,10 @@ program
 }));
 program
     .command('actor <actor_name>')
-    .action((actorName) => __awaiter(this, void 0, void 0, function* () {
+    .option('-e, --exchange [exchange]', 'AMQP exchange')
+    .option('-r, --routingkey [routingkey]', 'AMQP routing key')
+    .option('-q, --queue [queue]', 'AMQP queue')
+    .action((actorName, args) => __awaiter(this, void 0, void 0, function* () {
     let p = path.join(process.cwd(), 'actors', actorName);
     mkdirp(p, function () {
         return __awaiter(this, void 0, void 0, function* () {

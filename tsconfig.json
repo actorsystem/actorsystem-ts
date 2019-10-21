@@ -10,9 +10,13 @@
 		"sourceMap": true,
 		"sourceRoot": "."
   },
+  "include": [
+    "bin",
+    "lib"
+  ],
   "exclude": [
-    "templates",
     "node_modules",
+    "templates",
     "dist",
     "test"
   ]

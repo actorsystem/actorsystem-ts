@@ -1,13 +1,14 @@
 {
   "name": "rabbi",
-  "version": "1.6.5",
-  "description": "Microservices Toolchain for RabbitMQ",
+  "version": "1.6.6",
+  "description": "Actor System Framework for AMQP",
   "main": "dist/lib/rabbi.js",
   "bin": {
     "rabbi": "./dist/bin/rabbi.js"
   },
   "scripts": {
-    "test": "npm test"
+    "test": "npm test",
+    "build": "tsc && cp -r templates dist/templates"
   },
   "repository": {
     "type": "git",

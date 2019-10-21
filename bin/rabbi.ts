@@ -46,7 +46,10 @@ program
 
 program
   .command('actor <actor_name>')
-  .action(async (actorName) => {
+  .option('-e, --exchange [exchange]', 'AMQP exchange')
+  .option('-r, --routingkey [routingkey]', 'AMQP routing key')
+  .option('-q, --queue [queue]', 'AMQP queue')
+  .action(async (actorName, args) => {
 
     let p = path.join(process.cwd(), 'actors', actorName);
 
