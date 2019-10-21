@@ -2,7 +2,7 @@
 
 import * as program from 'commander';
 
-var rabbi = require('../dist/lib/rabbi');
+var rabbi = require('../lib/rabbi');
 
 var path = require('path');
 
