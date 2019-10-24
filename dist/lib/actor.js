@@ -33,6 +33,7 @@ class Actor extends events_1.EventEmitter {
             yield this.channel.assertQueue(this.actorParams.queue);
             logger_1.log.info('bunnies.amqp.binding.created', this.toJSON());
             yield this.channel.bindQueue(this.actorParams.queue, this.actorParams.exchange, this.actorParams.routingkey);
+            yield this.channel.prefetch(3);
             return this.channel;
         });
     }
