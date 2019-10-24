@@ -61,6 +61,8 @@ export class Actor extends EventEmitter {
       this.actorParams.routingkey
     );
 
+    await this.channel.prefetch(3);
+
     return this.channel;
 
   }

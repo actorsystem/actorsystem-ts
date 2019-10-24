@@ -29,7 +29,8 @@ exports.getDirectories = getDirectories;
 const delay = require("delay");
 exports.delay = delay;
 function startActorsDirectory(directoryIndexPath, opts = {
-    exclude: []
+    exclude: [],
+    include: []
 }) {
     return __awaiter(this, void 0, void 0, function* () {
         let directories = getDirectories(directoryIndexPath);
@@ -52,6 +53,10 @@ function startActorsDirectory(directoryIndexPath, opts = {
         actors = lodash_1.reject(actors, a => !a);
         let shouldExclude = buildShouldExclude(opts.exclude);
         actors = lodash_1.reject(actors, actor => shouldExclude(actor.name));
+        if (opts.include.length > 0) {
+            let included = buildIncluded(opts.include);
+            actors = lodash_1.filter(actors, actor => included(actor.name));
+        }
         actors.forEach(actor => require(actor.path).start());
         return actors;
     });
@@ -64,6 +69,15 @@ function buildShouldExclude(excludeOpts) {
     }, {});
     return function (actorName) {
         return exclusions[actorName];
+    };
+}
+function buildIncluded(includeOpts) {
+    var inclusions = lodash_1.reduce(includeOpts, (inclusions, actorName) => {
+        inclusions[actorName] = true;
+        return inclusions;
+    }, {});
+    return function (actorName) {
+        return inclusions[actorName];
     };
 }
 //# sourceMappingURL=rabbi.js.map

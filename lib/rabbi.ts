@@ -3,7 +3,7 @@ require('dotenv').config();
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { reject, reduce } from 'lodash';
+import { reject, reduce, filter } from 'lodash';
 
 import { Actor } from './actor';
 
@@ -30,7 +30,8 @@ export {
 }
 
 interface StartActorsDirectoryOpts {
-  exclude: string[];
+  exclude?: string[];
+  include?: string[];
 }
 
 interface ActorHandle {
@@ -41,7 +42,8 @@ interface ActorHandle {
 
 export async function startActorsDirectory(directoryIndexPath: string,
   opts: StartActorsDirectoryOpts = {
-    exclude: []
+    exclude: [],
+    include: []
   }): Promise<ActorHandle[]> {
 
   let directories = getDirectories(directoryIndexPath);
@@ -78,6 +80,11 @@ export async function startActorsDirectory(directoryIndexPath: string,
 
   actors = reject(actors, actor => shouldExclude(actor.name));
 
+  if (opts.include.length > 0) {
+    let included = buildIncluded(opts.include);
+    actors = filter(actors, actor => included(actor.name));
+  }
+
   actors.forEach(actor => require(actor.path).start());
 
   return actors; 
@@ -97,6 +104,24 @@ function buildShouldExclude(excludeOpts: any[]) {
   return function(actorName) {
 
     return exclusions[actorName];
+
+  }
+
+}
+ 
+function buildIncluded(includeOpts: any[]) {
+
+  var inclusions = reduce(includeOpts, (inclusions, actorName) => {
+
+    inclusions[actorName] = true;
+
+    return inclusions;
+
+  }, {});
+
+  return function(actorName) {
+
+    return inclusions[actorName];
 
   }
 
