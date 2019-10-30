@@ -1,10 +1,10 @@
 {
   "name": "rabbi",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Microservices Toolchain for RabbitMQ",
   "main": "dist/lib/rabbi.js",
   "bin": {
-    "rabbi": "./bin/rabbi.js"
+    "rabbi": "./dist/bin/rabbi.js"
   },
   "scripts": {
     "test": "npm test",
