@@ -1,5 +1,7 @@
 
-import {connect, Connection} from 'amqplib';
+import {connect, Connection, Channel} from 'amqplib';
+
+var channel: Channel;
 
 import * as waitPort from 'wait-port';
 
@@ -10,10 +12,34 @@ import { log } from './logger';
 var connection: Connection;
 
 var connecting = false;
+var channelIsConnected = false;
 
 require('dotenv').config();
 
 const AMQP_URL = process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672/';
+
+(async function() {
+
+  connection = await getConnection();
+ 
+  channel = await connection.createChannel();  
+
+  channelIsConnected = true;
+  
+})();
+ 
+
+export async function awaitChannel() {
+
+  while (!channelIsConnected) {
+
+    await wait(100);
+
+  }
+
+  return channel;
+
+}
 
 export async function getConnection() {
 

@@ -9,13 +9,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const amqplib_1 = require("amqplib");
+var channel;
 const waitPort = require("wait-port");
 const url = require("url");
 const logger_1 = require("./logger");
 var connection;
 var connecting = false;
+var channelIsConnected = false;
 require('dotenv').config();
 const AMQP_URL = process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672/';
+(function () {
+    return __awaiter(this, void 0, void 0, function* () {
+        connection = yield getConnection();
+        channel = yield connection.createChannel();
+        channelIsConnected = true;
+    });
+})();
+function awaitChannel() {
+    return __awaiter(this, void 0, void 0, function* () {
+        while (!channelIsConnected) {
+            yield wait(100);
+        }
+        return channel;
+    });
+}
+exports.awaitChannel = awaitChannel;
 function getConnection() {
     return __awaiter(this, void 0, void 0, function* () {
         while (connecting) {

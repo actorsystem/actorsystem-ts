@@ -3,13 +3,15 @@ require('dotenv').config();
 import * as fs from 'fs';
 import * as path from 'path';
 
+import * as datapay from 'datapay';
+
 import { reject, reduce } from 'lodash';
 
 import { Actor } from './actor';
 
 import { log } from './logger';
 
-import { getConnection } from './amqp';
+import { getConnection, awaitChannel } from './amqp';
 
 import * as Joi from 'joi';
 
@@ -26,7 +28,8 @@ export {
   log,
   getConnection,
   delay,
-  Joi
+  Joi,
+  publish
 }
 
 interface StartActorsDirectoryOpts {
@@ -37,6 +40,50 @@ interface ActorHandle {
   path: string,
   name: string,
   actor?: Actor
+}
+
+interface PublishOptions {
+  exchange: string;
+  routingkey: string;
+  content: string;
+  blockchain?: boolean;
+}
+
+async function publish(options: PublishOptions) {
+
+  let message = Buffer.from(options.content);
+  let channel = await awaitChannel();
+
+  channel.publish(options.exchange, options.routingkey, message);
+
+  if (options.blockchain) {
+    log.info('publish to blockchain', options);
+
+    if (process.env.RABBI_DATAPAY_PRIVATE_KEY) {
+
+      try {
+
+        let resp = await datapay.send({
+          safe: true,
+          data: [message],
+          pay: { key: process.env.RABBI_DATAPAY_PRIVATE_KEY }
+        });
+
+        log.info('datapay.published', resp);
+
+      } catch(error) {
+
+        log.error('datapay.error', error);
+
+      }
+
+    } else {
+
+      await channel.publish('rabbi.persistence', 'bsv', message);
+
+    }
+  }
+
 }
 
 export async function startActorsDirectory(directoryIndexPath: string,

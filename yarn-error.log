@@ -1,11 +1,11 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add lodash-reject
+  /usr/local/bin/node /usr/local/bin/yarn add datapay
 
 PATH: 
-  /Applications/Postgres.app/Contents/MacOS/bin:/opt/chefdk/bin:/Users/zyler/.chefdk/gem/ruby/2.6.0/bin:/opt/chefdk/embedded/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Applications/Postgres.app/Contents/Versions/latest/bin:/usr/local/go/bin:/Users/zyler/go/bin:/opt:/Applications/Postgres.app/Contents/Versions/latest/bin:/Volumes/PATRIOT/bin:/Users/zyler/Library/Android/sdk/platform-tools:/Users/zyler/Library/Android/sdk/tools:/opt/chefdk/gitbin:/Users/zyler/Library/Android/sdk/build-tools/28.0.3/
+  /opt/chefdk/bin:/Users/zyler/.chefdk/gem/ruby/2.6.0/bin:/opt/chefdk/embedded/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Postgres.app/Contents/Versions/latest/bin:/opt/chefdk/gitbin:/Users/zyler/go/bin:/usr/local/opt/go/libexec/bin:/Users/zyler/Library/Android/sdk/tools/:/opt:/Users/zyler/Library/Android/sdk/platform-tools:/Users/zyler/Library/Android/sdk/tools:/Users/zyler/Library/Android/sdk/build-tools/28.0.2:/Users/zyler/Library/Android/sdk/build-tools/27.0.3/
 
 Yarn version: 
-  1.17.3
+  1.9.4
 
 Node version: 
   10.16.0
@@ -14,29 +14,21 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/lodash-reject: Not found
-      at Request.params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66830:18)
-      at Request.self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140464:22)
-      at Request.emit (events.js:198:13)
-      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141436:10)
-      at Request.emit (events.js:198:13)
-      at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141358:12)
-      at Object.onceWrapper (events.js:286:20)
-      at IncomingMessage.emit (events.js:203:15)
-      at endReadableNT (_stream_readable.js:1129:12)
-      at process._tickCallback (internal/process/next_tick.js:63:19)
+  Error: getaddrinfo ENOTFOUND registry.yarnpkg.com registry.yarnpkg.com:443
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:56:26)
 
 npm manifest: 
   {
     "name": "rabbi",
-    "version": "1.5.3",
-    "description": "Microservices Toolchain for RabbitMQ",
+    "version": "1.6.6",
+    "description": "Actor System Framework for AMQP",
     "main": "dist/lib/rabbi.js",
     "bin": {
-      "rabbi": "./bin/rabbi.ts"
+      "rabbi": "./dist/bin/rabbi.js"
     },
     "scripts": {
-      "test": "npm test"
+      "test": "npm test",
+      "build": "tsc && cp -r templates dist/templates"
     },
     "repository": {
       "type": "git",
@@ -70,6 +62,7 @@ npm manifest:
       "delay": "^4.3.0",
       "dotenv": "^8.0.0",
       "joi": "^14.3.1",
+      "lodash": "^4.17.15",
       "lodash.reject": "^4.6.0",
       "mkdirp": "^0.5.1",
       "mocha": "^6.2.0",
@@ -763,7 +756,7 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/lodash.reject/-/lodash.reject-4.6.0.tgz#80d6492dc1470864bbf583533b651f42a9f52415"
     integrity sha1-gNZJLcFHCGS79YNTO2UfQqn1JBU=
   
-  lodash@^4.17.11, lodash@^4.17.14:
+  lodash@^4.17.11, lodash@^4.17.14, lodash@^4.17.15:
     version "4.17.15"
     resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
     integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
