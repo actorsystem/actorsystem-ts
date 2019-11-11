@@ -18,6 +18,7 @@ const logger_1 = require("./logger");
 exports.log = logger_1.log;
 const amqp_1 = require("./amqp");
 exports.getConnection = amqp_1.getConnection;
+exports.getChannel = amqp_1.getChannel;
 const Joi = require("joi");
 exports.Joi = Joi;
 function getDirectories(source) {

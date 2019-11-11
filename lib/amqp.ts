@@ -1,5 +1,5 @@
 
-import {connect, Connection} from 'amqplib';
+import {connect, Connection, Channel} from 'amqplib';
 
 import * as waitPort from 'wait-port';
 
@@ -8,6 +8,7 @@ import * as url from 'url';
 import { log } from './logger';
 
 var connection: Connection;
+var channel: Channel;
 
 var connecting = false;
 
@@ -43,6 +44,21 @@ export async function getConnection() {
   }
 
   return connection;
+
+}
+
+export async function getChannel() {
+
+  if (channel) {
+
+    return channel;
+  }
+
+  let conn = await getConnection();
+
+  channel = await conn.createChannel();
+
+  return channel;
 
 }
   

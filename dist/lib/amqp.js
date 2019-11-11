@@ -13,6 +13,7 @@ const waitPort = require("wait-port");
 const url = require("url");
 const logger_1 = require("./logger");
 var connection;
+var channel;
 var connecting = false;
 require('dotenv').config();
 const AMQP_URL = process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672/';
@@ -36,6 +37,17 @@ function getConnection() {
     });
 }
 exports.getConnection = getConnection;
+function getChannel() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (channel) {
+            return channel;
+        }
+        let conn = yield getConnection();
+        channel = yield conn.createChannel();
+        return channel;
+    });
+}
+exports.getChannel = getChannel;
 function wait(ms) {
     return new Promise((resolve, reject) => {
         setTimeout(resolve, ms);

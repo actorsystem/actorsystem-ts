@@ -9,7 +9,7 @@ import { Actor } from './actor';
 
 import { log } from './logger';
 
-import { getConnection } from './amqp';
+import { getConnection, getChannel } from './amqp';
 
 import * as Joi from 'joi';
 
@@ -25,6 +25,7 @@ export {
   Actor,
   log,
   getConnection,
+  getChannel,
   delay,
   Joi
 }
