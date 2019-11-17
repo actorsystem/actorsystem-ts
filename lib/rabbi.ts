@@ -7,6 +7,8 @@ import * as datapay from 'datapay';
 
 import { reject, reduce } from 'lodash';
 
+import { handlers } from './handlers';
+
 import { Actor } from './actor';
 
 import { log } from './logger';
@@ -29,7 +31,8 @@ export {
   getConnection,
   delay,
   Joi,
-  publish
+  publish,
+  handlers
 }
 
 interface StartActorsDirectoryOpts {
