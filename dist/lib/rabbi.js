@@ -29,6 +29,23 @@ function getDirectories(source) {
 exports.getDirectories = getDirectories;
 const delay = require("delay");
 exports.delay = delay;
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+function requireHandlersDirectory(dirname) {
+    var handlers = require('require-all')({
+        dirname,
+        filter: /(.+)\.ts$/,
+        map: function (name, path) {
+            return name.split('_').map(p => {
+                return capitalizeFirstLetter(p);
+            })
+                .join('');
+        }
+    });
+    return handlers;
+}
+exports.requireHandlersDirectory = requireHandlersDirectory;
 function startActorsDirectory(directoryIndexPath, opts = {
     exclude: [],
     include: []
