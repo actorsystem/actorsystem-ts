@@ -29,7 +29,10 @@ class Actor extends events_1.EventEmitter {
             }
             this.channel = yield this.connection.createChannel();
             logger_1.log.info('bunnies.amqp.channel.created');
-            yield this.channel.assertExchange(this.actorParams.exchange, 'direct');
+            let exchangeExists = yield this.channel.checkExchange(this.actorParams.exchange);
+            if (!exchangeExists) {
+                yield this.channel.assertExchange(this.actorParams.exchange, 'topic');
+            }
             yield this.channel.assertQueue(this.actorParams.queue);
             logger_1.log.info('bunnies.amqp.binding.created', this.toJSON());
             yield this.channel.bindQueue(this.actorParams.queue, this.actorParams.exchange, this.actorParams.routingkey);
@@ -40,6 +43,12 @@ class Actor extends events_1.EventEmitter {
     constructor(actorParams) {
         super();
         this.actorParams = actorParams;
+        if (!actorParams.queue) {
+            this.actorParams.queue = actorParams.routingkey;
+        }
+        if (!actorParams.routingkey) {
+            this.actorParams.routingkey = actorParams.queue;
+        }
     }
     static create(connectionInfo) {
         let actor = new Actor(connectionInfo);
