@@ -168,30 +168,7 @@ Each actor is also an Event Emitter, emitting the following events:
 ## File System
 
 Actors are exported as javascript modules. Each module must export an Actor
-which implements the bunnies.Actor interface.
-
-## Command Line Tool
-
-Microservices can be run one or more at a time from the command line using the
-`bunnies` command.
-
-
-To run all actors
-```
-sh> bunnies --dir=./actors
-
-
-```
-sh> bunnies -a actors/matcher.js -a actors/rpc.js -a actors/websocket.js
-
-```
-
-```
-sh> bunnies -bind universalgoldtrust|payments|ugt.payments \
-            -queue ugt.payments \
-            -exec process_payments.sh \
-            -cleanup
-```
+which implements the rabbi.Actor interface.
 
 ## Configuring Multiple Actors per Process 
 
