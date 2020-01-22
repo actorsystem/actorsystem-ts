@@ -37,7 +37,7 @@ startActorsDirectory(__dirname);
 
 ```
 
-# Bunnies
+# Rabbi
 
 Microservices Actor Toolchain for RabbitMQ
 
@@ -56,7 +56,7 @@ fuzzy, like a bunny.
 
 ## Architecture
 
-According to AMQP best practices bunnies will connect a single socket to
+According to AMQP best practices Rabbi will connect a single socket to
 the AMQP server provided by the AMQP_URL environment variable. This singleton
 connection is used automatically when starting all actors, unless another
 connection is specified explicitly.
@@ -64,7 +64,7 @@ connection is specified explicitly.
 You can also get a handle on the singleton connection by running
 
 ```
-import { getConnection } from 'bunnies';
+import { getConnection } from 'rabbi';
 
 let connection = await getConnection();
 
@@ -192,4 +192,74 @@ sh> bunnies -bind universalgoldtrust|payments|ugt.payments \
             -exec process_payments.sh \
             -cleanup
 ```
+
+## Configuring Multiple Actors per Process 
+
+A single node.js process requires 200MB of RAM just to smoothly run the V8
+runtime and load all of your code objects into memory, even for the most basic
+Actor. However the additional resource overhead of adding a second Actor to a
+single operating  system process is significantly less, likely under 1 MB per
+Actor or less. Rabbi establishes a single TCP connection to amqp per process so
+including additional Actors leads to only new logical rabbimtq channel but no
+new physical network connections.
+
+Thus we can scale Rabbi from only less than a dozen Actors per virtual machine
+to many hundreds of actors per virtual machine. Higher level orchestration
+frameworks can schedule Rabbi processes such that the total number of Actors are
+split up evenly in processes based on the number of CPU cores available on the
+host system. For each one core Rabbi may run one process in parallel with
+processes on other cores. Within each operating system process Rabbi runs any
+number of co-routines concurrently. Co-routines will block each other only on
+blocking calls for computation or blocking IO. Since Rabbi Actors react
+passively to new events many can be run at once.
+
+### Loading Configuration File
+
+By default Rabbi will search for a configuration file in json format at the
+standard linux config file location:
+
+`/etc/rabbi/rabbi.conf.json`
+
+When this file is not found rabbi will search the current working directory for
+a configuration json file and load that:
+
+`${pwd}/rabbi.conf.json`
+
+If neither of these files is present Rabbi will fall back to using the default
+configuration.
+
+To customize the search path for your Rabbi configuration file you may
+optionally provide an environment variable at runtime called
+`RABBI_CONFIG_FILE_PATH`. When specified the path will be used and if a file is
+found it will take precedence over all other configuration file options.
+
+### Example Configuration For Multiple Actors
+
+Most Rabbi applications will run a decent number of Actors in parallel, often
+concurrently within the same operating system process. In the follow example
+configuration file we specify which actors we would like to run in this process.
+
+This simple app is a wallet which has a balance and can send and receive
+payments. We have actors named UpdateBalance, SendPayment, ReceivePayment which
+we would like to run. By convention the actors are stored at files with their
+names in snake_case such that the actor named `UpdateBalance` lives in
+`actors/update_balance/actor.ts`. Use the snake_case version of your actor in
+the Rabbi configuration file section array called `actors`.
+
+```
+#/etc/rabbi/rabbi.conf.json
+{
+  "actors": [
+    "update_balance",
+    "send_payment",
+    "receive_payment"
+  ]
+}
+```
+
+From your terminal in the root of your Rabbi project run `rabbi start` to start
+rabbi with the three actors listed in your configuration file. Rabbi will look
+in the unix standard location for your configuration and load all three actors.
+Congratulations your app is now running three actors and can respond to sending
+and receiving payments by updating your balance
 
