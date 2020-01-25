@@ -33,6 +33,8 @@ export class Actor extends EventEmitter {
 
   schema: Joi.Schema;
 
+  heartbeatInterval: any; // Timeout from setInterval
+
   toJSON(): any {
 
     return {
@@ -97,6 +99,7 @@ export class Actor extends EventEmitter {
     super();
 
     this.hostname = os.hostname();
+
     this.actorParams = actorParams;
 
     if (!actorParams.queue) {
@@ -131,6 +134,16 @@ export class Actor extends EventEmitter {
 
   }
 
+  async stop() {
+
+    if (this.heartbeatInterval) {
+
+      clearInterval(this.heartbeatInterval);
+
+    }
+    
+  }
+
   async start(consumer?: (channel: any, msg: any, json?: any) => Promise<void>) {
 
     process.on('SIGINT', async () => {
@@ -161,6 +174,14 @@ export class Actor extends EventEmitter {
     await channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(
       this.toJSON()
     )));
+
+    this.heartbeatInterval = setInterval(async () => {
+
+      await channel.publish('rabbi', 'actor.heartbeat', Buffer.from(JSON.stringify(
+        this.toJSON()
+      )));
+
+    }, 60000);
 
     channel.consume(this.actorParams.queue, async (msg) => {
 
