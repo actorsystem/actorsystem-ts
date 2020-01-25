@@ -40,6 +40,26 @@ async function start() {
 
     exchange: 'rabbi',
 
+    routingkey: 'actor.heartbeat',
+
+    queue: 'rabbi_handle_actor_heartbeat'
+
+  })
+  .start(async (channel, msg, json) => {
+
+    console.log('actor.heartbeat', json);
+    //log.info(JSON.stringify(json));
+
+    //actorStarted(json);
+
+    channel.ack(msg);
+
+  });
+
+  Actor.create({
+
+    exchange: 'rabbi',
+
     routingkey: 'actor.stopped',
 
     queue: 'rabbi_handle_actor_stopped'

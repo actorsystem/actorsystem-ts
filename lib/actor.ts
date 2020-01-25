@@ -33,6 +33,8 @@ export class Actor extends EventEmitter {
 
   schema: Joi.Schema;
 
+  heartbeatMilliseconds: number = 10000; // Timeout from setInterval
+
   heartbeatInterval: any; // Timeout from setInterval
 
   toJSON(): any {
@@ -181,7 +183,7 @@ export class Actor extends EventEmitter {
         this.toJSON()
       )));
 
-    }, 60000);
+    }, this.heartbeatMilliseconds);
 
     channel.consume(this.actorParams.queue, async (msg) => {
 
