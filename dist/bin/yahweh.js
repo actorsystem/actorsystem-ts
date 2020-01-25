@@ -32,6 +32,17 @@ function start() {
         }));
         actor_1.Actor.create({
             exchange: 'rabbi',
+            routingkey: 'actor.heartbeat',
+            queue: 'rabbi_handle_actor_heartbeat'
+        })
+            .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
+            console.log('actor.heartbeat', json);
+            //log.info(JSON.stringify(json));
+            //actorStarted(json);
+            channel.ack(msg);
+        }));
+        actor_1.Actor.create({
+            exchange: 'rabbi',
             routingkey: 'actor.stopped',
             queue: 'rabbi_handle_actor_stopped'
         })

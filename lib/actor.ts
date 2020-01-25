@@ -150,14 +150,14 @@ export class Actor extends EventEmitter {
 
     process.on('SIGINT', async () => {
 
-      await channel.publish('rabbi', 'actor.stopped', Buffer.from(JSON.stringify(
+      await this.channel.publish('rabbi', 'actor.stopped', Buffer.from(JSON.stringify(
         this.toJSON()
       )));
 
 
       setTimeout(() => {
 
-        channel.close();
+        this.channel.close();
 
         process.kill(process.pid, 'SIGKILL');
 

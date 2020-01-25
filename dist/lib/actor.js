@@ -15,6 +15,22 @@ const publicIp = require('public-ip');
 const os = require("os");
 const bsv = require("bsv");
 class Actor extends events_1.EventEmitter {
+    constructor(actorParams) {
+        super();
+        this.heartbeatMilliseconds = 10000; // Timeout from setInterval
+        this.hostname = os.hostname();
+        this.actorParams = actorParams;
+        if (!actorParams.queue) {
+            this.actorParams.queue = actorParams.routingkey;
+        }
+        if (!actorParams.routingkey) {
+            this.actorParams.routingkey = actorParams.queue;
+        }
+        if (!this.privateKey) {
+            this.privateKey = new bsv.PrivateKey();
+            this.id = this.privateKey.toAddress().toString();
+        }
+    }
     toJSON() {
         return {
             exchange: this.actorParams.exchange,
@@ -47,21 +63,6 @@ class Actor extends events_1.EventEmitter {
             return this.channel;
         });
     }
-    constructor(actorParams) {
-        super();
-        this.hostname = os.hostname();
-        this.actorParams = actorParams;
-        if (!actorParams.queue) {
-            this.actorParams.queue = actorParams.routingkey;
-        }
-        if (!actorParams.routingkey) {
-            this.actorParams.routingkey = actorParams.queue;
-        }
-        if (!this.privateKey) {
-            this.privateKey = new bsv.PrivateKey();
-            this.id = this.privateKey.toAddress().toString();
-        }
-    }
     static create(connectionInfo) {
         let actor = new Actor(connectionInfo);
         return actor;
@@ -73,12 +74,19 @@ class Actor extends events_1.EventEmitter {
             logger_1.log.info(message);
         });
     }
+    stop() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.heartbeatInterval) {
+                clearInterval(this.heartbeatInterval);
+            }
+        });
+    }
     start(consumer) {
         return __awaiter(this, void 0, void 0, function* () {
             process.on('SIGINT', () => __awaiter(this, void 0, void 0, function* () {
-                yield channel.publish('rabbi', 'actor.stopped', Buffer.from(JSON.stringify(this.toJSON())));
+                yield this.channel.publish('rabbi', 'actor.stopped', Buffer.from(JSON.stringify(this.toJSON())));
                 setTimeout(() => {
-                    channel.close();
+                    this.channel.close();
                     process.kill(process.pid, 'SIGKILL');
                 }, 2000);
             }));
@@ -86,6 +94,9 @@ class Actor extends events_1.EventEmitter {
             let channel = yield this.connectAmqp(this.actorParams.connection);
             this.ip = yield publicIp.v4();
             yield channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(this.toJSON())));
+            this.heartbeatInterval = setInterval(() => __awaiter(this, void 0, void 0, function* () {
+                yield channel.publish('rabbi', 'actor.heartbeat', Buffer.from(JSON.stringify(this.toJSON())));
+            }), this.heartbeatMilliseconds);
             channel.consume(this.actorParams.queue, (msg) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     json = JSON.parse(msg.content.toString());
