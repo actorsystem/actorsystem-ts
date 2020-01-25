@@ -11,12 +11,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const events_1 = require("events");
 const logger_1 = require("./logger");
 const amqp_1 = require("./amqp");
+const publicIp = require('public-ip');
+const os = require("os");
+const bsv = require("bsv");
 class Actor extends events_1.EventEmitter {
     toJSON() {
         return {
             exchange: this.actorParams.exchange,
             routingkey: this.actorParams.routingkey,
-            queue: this.actorParams.queue
+            queue: this.actorParams.queue,
+            id: this.privateKey.toAddress().toString(),
+            hostname: this.hostname,
+            ip: this.ip
         };
     }
     connectAmqp(connection) {
@@ -26,15 +32,16 @@ class Actor extends events_1.EventEmitter {
             }
             else {
                 this.connection = yield amqp_1.getConnection();
+                logger_1.log.debug(`rabbi.amqp.connected`);
             }
             this.channel = yield this.connection.createChannel();
-            logger_1.log.info('bunnies.amqp.channel.created');
+            logger_1.log.debug('rabbi.amqp.channel.created');
             let exchangeExists = yield this.channel.checkExchange(this.actorParams.exchange);
             if (!exchangeExists) {
                 yield this.channel.assertExchange(this.actorParams.exchange, 'topic');
             }
             yield this.channel.assertQueue(this.actorParams.queue);
-            logger_1.log.info('bunnies.amqp.binding.created', this.toJSON());
+            logger_1.log.debug('rabbi.amqp.binding.created', this.toJSON());
             yield this.channel.bindQueue(this.actorParams.queue, this.actorParams.exchange, this.actorParams.routingkey);
             yield this.channel.prefetch(3);
             return this.channel;
@@ -42,12 +49,17 @@ class Actor extends events_1.EventEmitter {
     }
     constructor(actorParams) {
         super();
+        this.hostname = os.hostname();
         this.actorParams = actorParams;
         if (!actorParams.queue) {
             this.actorParams.queue = actorParams.routingkey;
         }
         if (!actorParams.routingkey) {
             this.actorParams.routingkey = actorParams.queue;
+        }
+        if (!this.privateKey) {
+            this.privateKey = new bsv.PrivateKey();
+            this.id = this.privateKey.toAddress().toString();
         }
     }
     static create(connectionInfo) {
@@ -63,8 +75,17 @@ class Actor extends events_1.EventEmitter {
     }
     start(consumer) {
         return __awaiter(this, void 0, void 0, function* () {
+            process.on('SIGINT', () => __awaiter(this, void 0, void 0, function* () {
+                yield channel.publish('rabbi', 'actor.stopped', Buffer.from(JSON.stringify(this.toJSON())));
+                setTimeout(() => {
+                    channel.close();
+                    process.kill(process.pid, 'SIGKILL');
+                }, 2000);
+            }));
             var json;
             let channel = yield this.connectAmqp(this.actorParams.connection);
+            this.ip = yield publicIp.v4();
+            yield channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(this.toJSON())));
             channel.consume(this.actorParams.queue, (msg) => __awaiter(this, void 0, void 0, function* () {
                 try {
                     json = JSON.parse(msg.content.toString());

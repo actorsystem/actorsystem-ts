@@ -1,10 +1,11 @@
 {
   "name": "rabbi",
-  "version": "1.9.0",
-  "description": "Microservices Toolchain for RabbitMQ",
+  "version": "1.10.1",
+  "description": "Build more reactive services better, faster, with more smiles.",
   "main": "dist/lib/rabbi.js",
   "bin": {
-    "rabbi": "./dist/bin/rabbi.js"
+    "rabbi": "./dist/bin/rabbi.js",
+    "yahweh": "./dist/bin/yahweh.js"
   },
   "scripts": {
     "test": "npm test",
@@ -38,14 +39,19 @@
     "@types/node": "^12.7.1",
     "@types/winston": "^2.4.4",
     "amqplib": "^0.5.3",
+    "async-redis": "^1.1.7",
+    "bsv": "^1.2.0",
     "cp-file": "^7.0.0",
     "delay": "^4.3.0",
     "dotenv": "^8.0.0",
+    "hapi": "^18.1.0",
+    "hapi-auth-basic": "^5.0.0",
     "joi": "^14.3.1",
     "lodash": "^4.17.15",
     "lodash.reject": "^4.6.0",
     "mkdirp": "^0.5.1",
     "mocha": "^6.2.0",
+    "public-ip": "^4.0.0",
     "superagent": "^5.0.5",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3",

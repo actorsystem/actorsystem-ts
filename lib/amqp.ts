@@ -32,14 +32,15 @@ export async function getConnection() {
 
     await waitPort({
       host: parsed.hostname,
-      port: parseInt(parsed.port)
+      port: parseInt(parsed.port),
+      output: 'silent'
     });
 
     connection = await connect(AMQP_URL);
 
     connecting = false;
 
-    log.info('bunnies.amqp.connected');
+    log.debug('amqp.amqp.connected');
 
   }
 

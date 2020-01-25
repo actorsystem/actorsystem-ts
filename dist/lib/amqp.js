@@ -27,11 +27,12 @@ function getConnection() {
             let parsed = url.parse(AMQP_URL);
             yield waitPort({
                 host: parsed.hostname,
-                port: parseInt(parsed.port)
+                port: parseInt(parsed.port),
+                output: 'silent'
             });
             connection = yield amqplib_1.connect(AMQP_URL);
             connecting = false;
-            logger_1.log.info('bunnies.amqp.connected');
+            logger_1.log.debug('amqp.amqp.connected');
         }
         return connection;
     });
