@@ -3,6 +3,7 @@
 require('dotenv').config();
 
 import { Actor } from '../lib/actor';
+import { getChannel } from '../lib/amqp';
 import { log } from '../lib/logger';
 
 import * as Hapi from 'hapi';
@@ -11,7 +12,11 @@ import { actorStarted, actorStopped, actorError, listHosts, listActors } from '.
 
 async function start() {
 
-  Actor.create({
+  let channel = await getChannel();
+
+  channel.assertExchange('rabbi', 'topic');
+
+  let actor = Actor.create({
 
     exchange: 'rabbi',
 
@@ -73,7 +78,10 @@ async function start() {
 
   const server = Hapi.server({
     port: process.env.YAHWEH_PORT || 5200,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+    routes: {
+      cors: true
+    }
   });
 
   await server.register(require('hapi-auth-basic'));

@@ -45,7 +45,7 @@ function listHosts() {
         return Object.keys(hosts).map(ip => {
             return {
                 ip,
-                actors: hosts[ip]
+                actors: Object.values(hosts[ip])
             };
         });
     });
@@ -53,7 +53,7 @@ function listHosts() {
 exports.listHosts = listHosts;
 function listActors() {
     return __awaiter(this, void 0, void 0, function* () {
-        return actors;
+        return Object.values(actors);
     });
 }
 exports.listActors = listActors;

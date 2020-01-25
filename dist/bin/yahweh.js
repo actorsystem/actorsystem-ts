@@ -11,12 +11,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 const actor_1 = require("../lib/actor");
+const amqp_1 = require("../lib/amqp");
 const logger_1 = require("../lib/logger");
 const Hapi = require("hapi");
 const actors_1 = require("../lib/actors");
 function start() {
     return __awaiter(this, void 0, void 0, function* () {
-        actor_1.Actor.create({
+        let channel = yield amqp_1.getChannel();
+        channel.assertExchange('rabbi', 'topic');
+        let actor = actor_1.Actor.create({
             exchange: 'rabbi',
             routingkey: 'actor.started',
             queue: 'rabbi_handle_actor_started'
@@ -51,7 +54,10 @@ function start() {
         }));
         const server = Hapi.server({
             port: process.env.YAHWEH_PORT || 5200,
-            host: '0.0.0.0'
+            host: '0.0.0.0',
+            routes: {
+                cors: true
+            }
         });
         yield server.register(require('hapi-auth-basic'));
         server.auth.strategy("yahweh", "basic", { validate: (req, user, pass) => {

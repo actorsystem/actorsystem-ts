@@ -54,7 +54,7 @@ export async function listHosts() {
 
     return {
       ip,
-      actors: hosts[ip]
+      actors: Object.values(hosts[ip])
     }
     
   });
@@ -63,7 +63,7 @@ export async function listHosts() {
 
 export async function listActors() {
 
-  return actors;
+  return Object.values(actors);
 
 }
 

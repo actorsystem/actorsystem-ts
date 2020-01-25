@@ -1,6 +1,6 @@
 {
   "name": "rabbi",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "description": "Build more reactive services better, faster, with more smiles.",
   "main": "dist/lib/rabbi.js",
   "bin": {
