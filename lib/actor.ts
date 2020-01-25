@@ -49,7 +49,11 @@ export class Actor extends EventEmitter {
 
     log.info('bunnies.amqp.channel.created');
 
-    await this.channel.assertExchange(this.actorParams.exchange, 'direct');
+    let exchangeExists = await this.channel.checkExchange(this.actorParams.exchange);
+
+    if (!exchangeExists) {
+      await this.channel.assertExchange(this.actorParams.exchange, 'topic');
+    }
 
     await this.channel.assertQueue(this.actorParams.queue);
 
@@ -72,6 +76,14 @@ export class Actor extends EventEmitter {
     super();
 
     this.actorParams = actorParams;
+
+    if (!actorParams.queue) {
+      this.actorParams.queue = actorParams.routingkey;
+    }
+
+    if (!actorParams.routingkey) {
+      this.actorParams.routingkey = actorParams.queue;
+    }
 
   }
 
