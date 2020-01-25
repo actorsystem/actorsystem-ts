@@ -12,6 +12,7 @@ var cp = require('cp-file');
 
 program
   .command('start')
+  .option('-a, --actors [actors]', 'List of actors to run')
   .option('-e, --exclude [exclude]', 'List of actors to exclude')
   .option('-d, --directory [directory]', 'Path to directory')
   .action(async (args) => {

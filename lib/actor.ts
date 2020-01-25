@@ -7,7 +7,13 @@ import { log } from './logger';
 
 import { getConnection } from './amqp';
 
+const publicIp = require('public-ip');
+
+import * as os from 'os';
+
 import * as Joi from 'joi';
+
+import * as bsv from 'bsv';
 
 export class Actor extends EventEmitter {
 
@@ -16,6 +22,14 @@ export class Actor extends EventEmitter {
   channel?: Channel;
 
   actorParams: ActorConnectionParams;
+  
+  privateKey: bsv.PrivateKey;
+
+  id: string;
+
+  hostname: string;
+
+  ip: string;
 
   schema: Joi.Schema;
 
@@ -27,7 +41,13 @@ export class Actor extends EventEmitter {
 
       routingkey: this.actorParams.routingkey,
 
-      queue: this.actorParams.queue
+      queue: this.actorParams.queue,
+
+      id: this.privateKey.toAddress().toString(),
+
+      hostname: this.hostname,
+
+      ip: this.ip
 
     };
 
@@ -43,11 +63,12 @@ export class Actor extends EventEmitter {
 
       this.connection = await getConnection();
 
+      log.debug(`rabbi.amqp.connected`);
     }
 
     this.channel = await this.connection.createChannel();
 
-    log.info('bunnies.amqp.channel.created');
+    log.debug('rabbi.amqp.channel.created');
 
     let exchangeExists = await this.channel.checkExchange(this.actorParams.exchange);
 
@@ -57,7 +78,7 @@ export class Actor extends EventEmitter {
 
     await this.channel.assertQueue(this.actorParams.queue);
 
-    log.info('bunnies.amqp.binding.created', this.toJSON());
+    log.debug('rabbi.amqp.binding.created', this.toJSON());
 
     await this.channel.bindQueue(
       this.actorParams.queue,
@@ -75,6 +96,7 @@ export class Actor extends EventEmitter {
 
     super();
 
+    this.hostname = os.hostname();
     this.actorParams = actorParams;
 
     if (!actorParams.queue) {
@@ -83,6 +105,11 @@ export class Actor extends EventEmitter {
 
     if (!actorParams.routingkey) {
       this.actorParams.routingkey = actorParams.queue;
+    }
+
+    if (!this.privateKey) {
+      this.privateKey = new bsv.PrivateKey();
+      this.id = this.privateKey.toAddress().toString()
     }
 
   }
@@ -106,9 +133,34 @@ export class Actor extends EventEmitter {
 
   async start(consumer?: (channel: any, msg: any, json?: any) => Promise<void>) {
 
+    process.on('SIGINT', async () => {
+
+      await channel.publish('rabbi', 'actor.stopped', Buffer.from(JSON.stringify(
+        this.toJSON()
+      )));
+
+
+      setTimeout(() => {
+
+        channel.close();
+
+        process.kill(process.pid, 'SIGKILL');
+
+      }, 2000)
+
+
+    })
+
+
     var json;
 
     let channel = await this.connectAmqp(this.actorParams.connection);
+
+    this.ip = await publicIp.v4();
+
+    await channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(
+      this.toJSON()
+    )));
 
     channel.consume(this.actorParams.queue, async (msg) => {
 
