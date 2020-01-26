@@ -8,7 +8,7 @@ import { log } from '../lib/logger';
 
 import * as Hapi from 'hapi';
 
-import { actorStarted, actorStopped, actorError, listHosts, listActors } from '../lib/actors';
+import { actorHeartbeat, actorStarted, actorStopped, actorError, listHosts, listActors } from '../lib/actors';
 
 async function start() {
 
@@ -31,26 +31,6 @@ async function start() {
     //log.info(JSON.stringify(json));
 
     actorStarted(json);
-
-    channel.ack(msg);
-
-  });
-
-  Actor.create({
-
-    exchange: 'rabbi',
-
-    routingkey: 'actor.heartbeat',
-
-    queue: 'rabbi_handle_actor_heartbeat'
-
-  })
-  .start(async (channel, msg, json) => {
-
-    console.log('actor.heartbeat', json);
-    //log.info(JSON.stringify(json));
-
-    //actorStarted(json);
 
     channel.ack(msg);
 
@@ -91,6 +71,25 @@ async function start() {
     //log.info(JSON.stringify(json));
 
     actorError(json);
+
+    channel.ack(msg);
+
+  });
+
+  Actor.create({
+
+    exchange: 'rabbi',
+
+    routingkey: 'actor.heartbeat',
+
+    queue: 'rabbi_handle_actor_heartbeat'
+
+  })
+  .start(async (channel, msg, json) => {
+
+    console.log('actor.heartbeat', json);
+
+    actorHeartbeat(json);
 
     channel.ack(msg);
 

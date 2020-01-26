@@ -3,8 +3,13 @@
 require('dotenv').config();
 
 import { Actor, Joi, log } from '../../lib/rabbi';
+import { getChannel } from '../../lib/amqp';
 
 export async function start() {
+
+  let channel = await getChannel();
+
+  await channel.assertExchange('anypay', 'topic');
 
   Actor.create({
 
