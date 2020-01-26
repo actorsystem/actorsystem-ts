@@ -32,17 +32,6 @@ function start() {
         }));
         actor_1.Actor.create({
             exchange: 'rabbi',
-            routingkey: 'actor.heartbeat',
-            queue: 'rabbi_handle_actor_heartbeat'
-        })
-            .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
-            console.log('actor.heartbeat', json);
-            //log.info(JSON.stringify(json));
-            //actorStarted(json);
-            channel.ack(msg);
-        }));
-        actor_1.Actor.create({
-            exchange: 'rabbi',
             routingkey: 'actor.stopped',
             queue: 'rabbi_handle_actor_stopped'
         })
@@ -61,6 +50,16 @@ function start() {
             console.log('actor.error', json);
             //log.info(JSON.stringify(json));
             actors_1.actorError(json);
+            channel.ack(msg);
+        }));
+        actor_1.Actor.create({
+            exchange: 'rabbi',
+            routingkey: 'actor.heartbeat',
+            queue: 'rabbi_handle_actor_heartbeat'
+        })
+            .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
+            console.log('actor.heartbeat', json);
+            actors_1.actorHeartbeat(json);
             channel.ack(msg);
         }));
         const server = Hapi.server({

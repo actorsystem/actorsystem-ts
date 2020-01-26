@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const moment = require("moment");
 const actors = {};
 const hosts = {};
 const errors = {};
@@ -17,7 +18,9 @@ function actorStarted(actorStartedEvent) {
         if (!hosts[actorStartedEvent.ip]) {
             hosts[actorStartedEvent.ip] = {};
         }
-        hosts[actorStartedEvent.ip][actorStartedEvent.id] = actorStartedEvent;
+        hosts[actorStartedEvent.ip][actorStartedEvent.id] = Object.assign(actorStartedEvent, {
+            last_heartbeat_at: new Date()
+        });
     });
 }
 exports.actorStarted = actorStarted;
@@ -40,6 +43,17 @@ function actorError(actorErrorEvent) {
     });
 }
 exports.actorError = actorError;
+function actorHeartbeat(actorHeartbeatEvent) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let actor = hosts[actorHeartbeatEvent.ip][actorHeartbeatEvent.id];
+        let newActorValue = Object.assign(actor, {
+            last_heartbeat_at: new Date()
+        });
+        hosts[actorHeartbeatEvent.ip][actorHeartbeatEvent.id] = newActorValue;
+        actors[actorHeartbeatEvent.id] = newActorValue;
+    });
+}
+exports.actorHeartbeat = actorHeartbeat;
 function listHosts() {
     return __awaiter(this, void 0, void 0, function* () {
         return Object.keys(hosts).map(ip => {
@@ -51,6 +65,33 @@ function listHosts() {
     });
 }
 exports.listHosts = listHosts;
+setInterval(() => __awaiter(this, void 0, void 0, function* () {
+    let one_minute_ago = moment().subtract(1, 'minutes').unix();
+    let _actors = yield listActors();
+    _actors.forEach((actor) => {
+        let lastHeartbeat = moment(actor.last_heartbeat_at).unix();
+        if (one_minute_ago > lastHeartbeat) {
+            console.log('delete stale actor', {
+                actor_id: actor.id
+            });
+            delete actors[actor.id];
+        }
+    });
+    let _hosts = Object.values(hosts);
+    Object.values(hosts).forEach((host) => {
+        Object.values(host).forEach((actor) => {
+            let lastHeartbeat = moment(actor.last_heartbeat_at).unix();
+            if (one_minute_ago > lastHeartbeat) {
+                console.log('delete stale actor from host', {
+                    host_ip: actor.host_ip,
+                    actor_id: actor.id
+                });
+                console.log(`hosts[${actor.ip}][${actor.id}]`);
+                delete hosts[actor.ip][actor.id];
+            }
+        });
+    });
+}), 15000);
 function listActors() {
     return __awaiter(this, void 0, void 0, function* () {
         return Object.values(actors);

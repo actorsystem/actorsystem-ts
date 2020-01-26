@@ -108,7 +108,7 @@ setInterval(async () => {
 
   Object.values(hosts).forEach((host: any) => {
 
-    Object.values(host).forEach(actor => {
+    Object.values(host).forEach((actor: any) => {
 
       let lastHeartbeat = moment(actor.last_heartbeat_at).unix();
 
