@@ -106,7 +106,7 @@ export async function startActorsDirectory(directoryIndexPath: string,
 
   actors = reject(actors, actor => shouldExclude(actor.name));
 
-  if (opts.include.length > 0) {
+  if (opts.include && opts.include.length > 0) {
     let included = buildIncluded(opts.include);
     actors = filter(actors, actor => included(actor.name));
   }

@@ -67,17 +67,21 @@ export class Actor extends EventEmitter {
 
       this.connection = await getConnection();
 
-      log.debug(`rabbi.amqp.connected`);
+      log.info(`rabbi.amqp.connected`);
     }
 
     this.channel = await this.connection.createChannel();
 
-    log.debug('rabbi.amqp.channel.created');
+    log.info('rabbi.amqp.channel.created');
 
-    let exchangeExists = await this.channel.checkExchange(this.actorParams.exchange);
+    try {
 
-    if (!exchangeExists) {
+      let result = await this.channel.checkExchange(this.actorParams.exchange);
+
+    } catch(error) {
+
       await this.channel.assertExchange(this.actorParams.exchange, 'topic');
+
     }
 
     await this.channel.assertQueue(this.actorParams.queue);

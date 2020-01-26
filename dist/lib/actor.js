@@ -48,12 +48,14 @@ class Actor extends events_1.EventEmitter {
             }
             else {
                 this.connection = yield amqp_1.getConnection();
-                logger_1.log.debug(`rabbi.amqp.connected`);
+                logger_1.log.info(`rabbi.amqp.connected`);
             }
             this.channel = yield this.connection.createChannel();
-            logger_1.log.debug('rabbi.amqp.channel.created');
-            let exchangeExists = yield this.channel.checkExchange(this.actorParams.exchange);
-            if (!exchangeExists) {
+            logger_1.log.info('rabbi.amqp.channel.created');
+            try {
+                let result = yield this.channel.checkExchange(this.actorParams.exchange);
+            }
+            catch (error) {
                 yield this.channel.assertExchange(this.actorParams.exchange, 'topic');
             }
             yield this.channel.assertQueue(this.actorParams.queue);

@@ -71,7 +71,7 @@ function startActorsDirectory(directoryIndexPath, opts = {
         actors = lodash_1.reject(actors, a => !a);
         let shouldExclude = buildShouldExclude(opts.exclude);
         actors = lodash_1.reject(actors, actor => shouldExclude(actor.name));
-        if (opts.include.length > 0) {
+        if (opts.include && opts.include.length > 0) {
             let included = buildIncluded(opts.include);
             actors = lodash_1.filter(actors, actor => included(actor.name));
         }

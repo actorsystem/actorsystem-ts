@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 
 import * as program from 'commander';
 
@@ -33,15 +33,19 @@ program
 
     } else {
 
-      directory  = path.join(process.cwd(), directory);
+      directory  = path.join(process.cwd(), 'actors');
   
     }
 
-    rabbi.startActorsDirectory(directory, {
+    var exclude = [];
 
-      exclude: args.exclude.split(',')
+    if (args.exclude) {
 
-    });
+      exclude = args.exclude.split(',')
+
+    }
+
+    rabbi.startActorsDirectory(directory, { exclude });
 
   });
 

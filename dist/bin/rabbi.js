@@ -30,11 +30,13 @@ program
         }
     }
     else {
-        directory = path.join(process.cwd(), directory);
+        directory = path.join(process.cwd(), directory, 'actors');
     }
-    rabbi.startActorsDirectory(directory, {
-        exclude: args.exclude.split(',')
-    });
+    var exclude = [];
+    if (args.exclude) {
+        exclude = args.exclude.split(',');
+    }
+    rabbi.startActorsDirectory(directory, { exclude });
 }));
 program
     .command('actor <actor_name>')

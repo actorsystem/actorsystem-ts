@@ -9,8 +9,6 @@ export async function start() {
 
   let channel = await getChannel();
 
-  await channel.assertExchange('anypay', 'topic');
-
   Actor.create({
 
     exchange: 'anypay',
