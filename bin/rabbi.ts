@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import * as program from 'commander';
+const program = require('commander');
 
 var rabbi = require('../lib/rabbi');
 

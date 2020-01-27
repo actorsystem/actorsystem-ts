@@ -1,11 +1,9 @@
 {
   "name": "rabbi",
-  "version": "1.10.7",
+  "version": "1.10.9",
   "description": "Build more reactive services better, faster, with more smiles.",
-  "main": "dist/lib/rabbi.js",
   "bin": {
-    "rabbi": "./bin/rabbi.ts",
-    "yahweh": "./dist/bin/yahweh.js"
+    "rabbi": "./bin/rabbi.ts"
   },
   "scripts": {
     "test": "npm test",

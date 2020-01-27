@@ -1,5 +1,4 @@
-#!/usr/bin/env node
-"use strict";
+#!/usr/bin/env ts-node
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -8,8 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-const program = require("commander");
+const program = require('commander');
 var rabbi = require('../lib/rabbi');
 var path = require('path');
 var mkdirp = require('mkdirp');
@@ -30,7 +28,7 @@ program
         }
     }
     else {
-        directory = path.join(process.cwd(), directory, 'actors');
+        directory = path.join(process.cwd(), 'actors');
     }
     var exclude = [];
     if (args.exclude) {
