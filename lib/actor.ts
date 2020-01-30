@@ -47,6 +47,8 @@ export class Actor extends EventEmitter {
 
       queue: this.actorParams.queue,
 
+      autoDelete: this.actorParams.autoDelete,
+
       id: this.privateKey.toAddress().toString(),
 
       hostname: this.hostname,
@@ -84,7 +86,9 @@ export class Actor extends EventEmitter {
 
     }
 
-    await this.channel.assertQueue(this.actorParams.queue);
+    await this.channel.assertQueue(this.actorParams.queue,{
+      autoDelete: this.actorParams.autoDelete || false
+    });
 
     log.debug('rabbi.amqp.binding.created', this.toJSON());
 
@@ -248,9 +252,11 @@ export interface ActorConnectionParams {
 
   queue: string;
 
-  connection?: Connection
+  connection?: Connection;
 
-  schema?: Joi.Schema
+  schema?: Joi.Schema;
+
+  autoDelete?: boolean
 
 }
 

@@ -15,9 +15,11 @@ export async function start() {
 
     routingkey: 'tmp.rabbi',
 
-    queue: 'rabbi_tmp',
+    queue: 'test_autoDelete',
 
-    schema: Joi.object() // optional, enforces validity of json schema
+    schema: Joi.object(), // optional, enforces validity of json schema
+
+    autoDelete: true
 
   })
   .start(async (channel, msg, json) => {
