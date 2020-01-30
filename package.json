@@ -1,6 +1,6 @@
 {
   "name": "rabbi",
-  "version": "1.10.10",
+  "version": "1.11.0",
   "description": "Build more reactive services better, faster, with more smiles.",
   "bin": {
     "rabbi": "./bin/rabbi.ts"
