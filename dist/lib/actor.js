@@ -36,6 +36,7 @@ class Actor extends events_1.EventEmitter {
             exchange: this.actorParams.exchange,
             routingkey: this.actorParams.routingkey,
             queue: this.actorParams.queue,
+            queueOptions: this.actorParams.queueOptions,
             id: this.privateKey.toAddress().toString(),
             hostname: this.hostname,
             ip: this.ip
@@ -58,7 +59,7 @@ class Actor extends events_1.EventEmitter {
             catch (error) {
                 yield this.channel.assertExchange(this.actorParams.exchange, 'topic');
             }
-            yield this.channel.assertQueue(this.actorParams.queue);
+            yield this.channel.assertQueue(this.actorParams.queue, this.actorParams.queueOptions);
             logger_1.log.debug('rabbi.amqp.binding.created', this.toJSON());
             yield this.channel.bindQueue(this.actorParams.queue, this.actorParams.exchange, this.actorParams.routingkey);
             yield this.channel.prefetch(3);
