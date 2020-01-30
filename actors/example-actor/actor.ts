@@ -15,7 +15,7 @@ export async function start() {
 
     routingkey: 'tmp.rabbi',
 
-    queue: 'test_autoDelete',
+    queue: 'rabbi_tmp',
 
     queueOptions: {
 
