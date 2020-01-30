@@ -76,7 +76,7 @@ export async function startActorsDirectory(directoryIndexPath: string,
 
   var tmpHandle: ActorHandle;
 
-  let actors: ActorHandle[] = directories.map(directory => {
+  let actors: any[] = directories.map(directory => {
 
     var dir = path.join(directoryIndexPath, directory);
 

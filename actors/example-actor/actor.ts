@@ -17,9 +17,13 @@ export async function start() {
 
     queue: 'test_autoDelete',
 
-    schema: Joi.object(), // optional, enforces validity of json schema
+    queueOptions: {
 
-    autoDelete: true
+      autoDelete: true
+
+    },
+
+    schema: Joi.object(), // optional, enforces validity of json schema
 
   })
   .start(async (channel, msg, json) => {
