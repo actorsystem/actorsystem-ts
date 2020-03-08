@@ -44,6 +44,7 @@ function requireHandlersDirectory(dirname) {
   return handlers;
 }
 
+import * as email from './email';
 
 export {
   Actor,
@@ -52,6 +53,7 @@ export {
   getChannel,
   delay,
   Joi,
+  email,
   requireHandlersDirectory
 }
 

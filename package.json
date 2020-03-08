@@ -39,6 +39,7 @@
     "@types/winston": "^2.4.4",
     "amqplib": "^0.5.3",
     "async-redis": "^1.1.7",
+    "aws-sdk": "^2.635.0",
     "bsv": "^1.2.0",
     "cp-file": "^7.0.0",
     "delay": "^4.3.0",
@@ -52,10 +53,13 @@
     "mocha": "^6.2.0",
     "moment": "^2.24.0",
     "public-ip": "^4.0.0",
+    "require-all": "^3.0.0",
     "superagent": "^5.0.5",
-    "ts-node": "^8.3.0",
     "typescript": "^3.5.3",
     "wait-port": "^0.2.2",
     "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "ts-node": "^8.6.2"
   }
 }
