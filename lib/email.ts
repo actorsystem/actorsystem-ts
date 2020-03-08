@@ -37,11 +37,11 @@ export async function sendEmail(templateName, emailAddress, personName) {
       Body: { /* required */
         Html: {
          Charset: "UTF-8",
-         Data: template.body
+         Data: template.body.toString()
         },
         Text: {
          Charset: "UTF-8",
-         Data: template.body
+         Data: template.body.toString()
         }
        },
        Subject: {
