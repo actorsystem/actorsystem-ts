@@ -1,14 +1,10 @@
-
-// import emails directory
-
 require('dotenv').config()
 import * as requireAll from  'require-all';
 import * as AWS from 'aws-sdk';
 AWS.config.update({ region: "us-east-1" });
 import { join } from 'path';
 
-const emails = Object.entries(requireAll(join(process.cwd(), 'emails')))
-  .map(([key, value]) => {
+const emails = Object.entries(requireAll(join(process.cwd(), 'emails'))).map(([key, value]) => {
     let e: any = value;
     return [key, e.index.default];
   })
@@ -17,14 +13,15 @@ const emails = Object.entries(requireAll(join(process.cwd(), 'emails')))
     acc[item[0]] = item[1];
 
     return acc;
-  }, {});
+  }, {})
 
-console.log(emails);
+export async function sendEmail(templateName, emailAddress, fromEmail, vars:any={}) {
 
-export async function sendEmail(templateName, emailAddress, personName) {
-  let template = emails[templateName];
+  let email: any = emails[templateName];
 
-  console.log("TEMPLATE", template);
+  if (!vars.emailAddress) {
+    vars.emailAddress = emailAddress;
+  }
 
   // Create sendEmail params
   var params = {
@@ -37,19 +34,19 @@ export async function sendEmail(templateName, emailAddress, personName) {
       Body: { /* required */
         Html: {
          Charset: "UTF-8",
-         Data: template.body.toString()
+         Data: email.template(vars)
         },
         Text: {
          Charset: "UTF-8",
-         Data: template.body.toString()
+         Data: email.template(vars)
         }
        },
        Subject: {
         Charset: 'UTF-8',
-        Data: template.title
+        Data: email.title
        }
       },
-    Source: 'blaze@anypayinc.com', /* required */
+    Source: fromEmail, /* required */
     ReplyToAddresses: [
        'steven@anypayinc.com',
       /* more items */
@@ -63,6 +60,4 @@ export async function sendEmail(templateName, emailAddress, personName) {
   return sendPromise
 
 }
-
-
 

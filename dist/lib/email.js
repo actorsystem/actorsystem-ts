@@ -1,5 +1,4 @@
 "use strict";
-// import emails directory
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15,8 +14,7 @@ const requireAll = require("require-all");
 const AWS = require("aws-sdk");
 AWS.config.update({ region: "us-east-1" });
 const path_1 = require("path");
-const emails = Object.entries(requireAll(path_1.join(process.cwd(), 'emails')))
-    .map(([key, value]) => {
+const emails = Object.entries(requireAll(path_1.join(process.cwd(), 'emails'))).map(([key, value]) => {
     let e = value;
     return [key, e.index.default];
 })
@@ -24,11 +22,12 @@ const emails = Object.entries(requireAll(path_1.join(process.cwd(), 'emails')))
     acc[item[0]] = item[1];
     return acc;
 }, {});
-console.log(emails);
-function sendEmail(templateName, emailAddress, personName) {
+function sendEmail(templateName, emailAddress, fromEmail, vars = {}) {
     return __awaiter(this, void 0, void 0, function* () {
-        let template = emails[templateName];
-        console.log("TEMPLATE", template);
+        let email = emails[templateName];
+        if (!vars.emailAddress) {
+            vars.emailAddress = emailAddress;
+        }
         // Create sendEmail params
         var params = {
             Destination: {
@@ -40,19 +39,19 @@ function sendEmail(templateName, emailAddress, personName) {
                 Body: {
                     Html: {
                         Charset: "UTF-8",
-                        Data: template.body.toString()
+                        Data: email.template(vars)
                     },
                     Text: {
                         Charset: "UTF-8",
-                        Data: template.body.toString()
+                        Data: email.template(vars)
                     }
                 },
                 Subject: {
                     Charset: 'UTF-8',
-                    Data: template.title
+                    Data: email.title
                 }
             },
-            Source: 'blaze@anypayinc.com',
+            Source: fromEmail,
             ReplyToAddresses: [
                 'steven@anypayinc.com',
             ],
