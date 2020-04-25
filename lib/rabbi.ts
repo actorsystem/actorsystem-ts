@@ -19,6 +19,18 @@ export function getDirectories(source) {
     .map(dirent => dirent.name)
 }
 
+export function startActors(actorNames=[]) {
+
+  actorNames.map(actorName => {
+
+    return require(path.join(process.cwd(), 'actors', actorName, 'actor.ts'));
+
+  })
+  .forEach(actor => actor.start());
+
+}
+
+
 import * as delay from 'delay';
 
 function capitalizeFirstLetter(string) {

@@ -28,6 +28,13 @@ function getDirectories(source) {
         .map(dirent => dirent.name);
 }
 exports.getDirectories = getDirectories;
+function startActors(actorNames = []) {
+    actorNames.map(actorName => {
+        return require(path.join(process.cwd(), 'actors', actorName, 'actor.ts'));
+    })
+        .forEach(actor => actor.start());
+}
+exports.startActors = startActors;
 const delay = require("delay");
 exports.delay = delay;
 function capitalizeFirstLetter(string) {
