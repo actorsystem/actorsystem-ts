@@ -15,6 +15,55 @@ const emails = Object.entries(requireAll(join(process.cwd(), 'emails'))).map(([k
     return acc;
   }, {})
 
+interface EmailSend {
+  templateName: string;
+  from: string;
+  to: string[];
+  replyTo?: string[];
+  vars?: any;
+  cc?: string[];
+  bcc?: string[];
+}
+
+export async function send(params: EmailSend) {
+
+  let email: any = emails[params.templateName];
+
+  // Create sendEmail params
+  var sesParams = {
+    Destination: { /* required */
+      ToAddresses: params.to,
+      CcAddresses: params.cc,
+      BccAddresses: params.bcc
+    },
+    Message: { /* required */
+      Body: { /* required */
+        Html: {
+         Charset: "UTF-8",
+         Data: email.template(params.vars)
+        },
+        Text: {
+         Charset: "UTF-8",
+         Data: email.template(params.vars)
+        }
+      },
+      Subject: {
+        Charset: 'UTF-8',
+        Data: email.title
+      }
+    },
+    Source: params.from, /* required */
+    ReplyToAddresses: params.replyTo
+  };
+
+  // Create the promise and SES service object
+  var sendPromise = new AWS.SES({apiVersion: '2010-12-01'}).sendEmail(sesParams).promise();
+
+  // Handle promise's fulfilled/rejected states
+  return sendPromise
+
+}
+
 export async function sendEmail(templateName, emailAddress, fromEmail, vars:any={}) {
 
   let email: any = emails[templateName];
