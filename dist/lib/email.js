@@ -44,7 +44,7 @@ function send(params) {
                 },
                 Subject: {
                     Charset: 'UTF-8',
-                    Data: email.title
+                    Data: params.subject || email.title
                 }
             },
             Source: params.from,

@@ -23,6 +23,7 @@ interface EmailSend {
   vars?: any;
   cc?: string[];
   bcc?: string[];
+  subject?: string;
 }
 
 export async function send(params: EmailSend) {
@@ -49,7 +50,7 @@ export async function send(params: EmailSend) {
       },
       Subject: {
         Charset: 'UTF-8',
-        Data: email.title
+        Data: params.subject || email.title
       }
     },
     Source: params.from, /* required */
