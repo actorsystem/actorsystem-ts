@@ -58,6 +58,12 @@ function requireHandlersDirectory(dirname) {
 
 import * as email from './email';
 
+export function jToB(json): Buffer {
+
+  return Buffer.from(JSON.stringify(json))
+
+}
+
 export {
   Actor,
   log,

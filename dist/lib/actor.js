@@ -55,10 +55,12 @@ class Actor extends events_1.EventEmitter {
             }
             this.channel = yield this.connection.createChannel();
             logger_1.log.info('rabbi.amqp.channel.created');
+            yield this.channel.assertExchange(this.actorParams.exchange, 'topic');
             try {
                 let result = yield this.channel.checkExchange(this.actorParams.exchange);
             }
             catch (error) {
+                console.log('error', error);
                 yield this.channel.assertExchange(this.actorParams.exchange, 'topic');
             }
             yield this.channel.assertQueue(this.actorParams.queue, this.actorParams.queueOptions);
@@ -93,7 +95,7 @@ class Actor extends events_1.EventEmitter {
                 setTimeout(() => {
                     this.channel.close();
                     process.kill(process.pid, 'SIGKILL');
-                }, 2000);
+                }, 500);
             }));
             var json;
             let channel = yield this.connectAmqp(this.actorParams.connection);

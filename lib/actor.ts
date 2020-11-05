@@ -76,11 +76,15 @@ export class Actor extends EventEmitter {
 
     log.info('rabbi.amqp.channel.created');
 
+    await this.channel.assertExchange(this.actorParams.exchange, 'topic');
+
     try {
 
       let result = await this.channel.checkExchange(this.actorParams.exchange);
 
     } catch(error) {
+
+      console.log('error', error)
 
       await this.channel.assertExchange(this.actorParams.exchange, 'topic');
 
@@ -167,8 +171,7 @@ export class Actor extends EventEmitter {
 
         process.kill(process.pid, 'SIGKILL');
 
-      }, 2000)
-
+      }, 500)
 
     })
 
