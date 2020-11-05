@@ -3,8 +3,11 @@ import * as requireAll from  'require-all';
 import * as AWS from 'aws-sdk';
 AWS.config.update({ region: "us-east-1" });
 import { join } from 'path';
+import { existsSync as fileExists } from 'fs'
 
-const emails = Object.entries(requireAll(join(process.cwd(), 'emails'))).map(([key, value]) => {
+const emailsDirectory =  join(process.cwd(), 'emails')
+
+const emails = fileExists(emailsDirectory) ? Object.entries(requireAll(emailsDirectory)).map(([key, value]) => {
     let e: any = value;
     return [key, e.index.default];
   })
@@ -13,7 +16,9 @@ const emails = Object.entries(requireAll(join(process.cwd(), 'emails'))).map(([k
     acc[item[0]] = item[1];
 
     return acc;
-  }, {})
+
+  }, {}) : {}
+
 
 interface EmailSend {
   templateName: string;
