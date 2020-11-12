@@ -77,14 +77,9 @@ export class Actor extends EventEmitter {
 
       log.info('rabbi.amqp.channel.created');
 
-      this.channel.checkExchange(this.actorParams.exchange, async (err) => {
+      //this.channel.checkExchange(this.actorParams.exchange, async (err) => {
 
-        if (err) {
-
-          console.log('err', err)
-          await this.channel.assertExchange(this.actorParams.exchange, 'topic');
-
-        }
+        await this.channel.assertExchange(this.actorParams.exchange, 'direct');
 
         await this.channel.assertQueue(this.actorParams.queue, this.actorParams.queueOptions);
 
@@ -100,7 +95,7 @@ export class Actor extends EventEmitter {
 
         resolve(this.channel);
 
-      })
+      //})
 
     })
 
