@@ -19,7 +19,7 @@ export class Actor extends EventEmitter {
 
   connection?: any;
 
-  channel?: Channel;
+  channel?: any;
 
   actorParams: ActorConnectionParams;
   
@@ -59,50 +59,50 @@ export class Actor extends EventEmitter {
 
   }
 
-  async connectAmqp(connection?: any) {
+  connectAmqp(connection?: any): Promise<any> {
+    return new Promise(async (resolve, reject) => {
 
-    if (connection) {
+      if (connection) {
 
-      this.connection = connection;
+        this.connection = connection;
 
-    } else {
+      } else {
 
-      this.connection = await getConnection();
+        this.connection = await getConnection();
 
-      log.info(`rabbi.amqp.connected`);
-    }
+        log.info(`rabbi.amqp.connected`);
+      }
 
-    this.channel = await this.connection.createChannel();
+      this.channel = await this.connection.createChannel();
 
-    log.info('rabbi.amqp.channel.created');
+      log.info('rabbi.amqp.channel.created');
 
-    await this.channel.assertExchange(this.actorParams.exchange, 'topic');
+      this.channel.checkExchange(this.actorParams.exchange, async (err) => {
 
-    try {
+        if (err) {
 
-      let result = await this.channel.checkExchange(this.actorParams.exchange);
+          console.log('err', err)
+          await this.channel.assertExchange(this.actorParams.exchange, 'topic');
 
-    } catch(error) {
+        }
 
-      console.log('error', error)
+        await this.channel.assertQueue(this.actorParams.queue, this.actorParams.queueOptions);
 
-      await this.channel.assertExchange(this.actorParams.exchange, 'topic');
+        log.info('rabbi.amqp.binding.created', this.toJSON());
 
-    }
+        await this.channel.bindQueue(
+          this.actorParams.queue,
+          this.actorParams.exchange,
+          this.actorParams.routingkey
+        );
 
-    await this.channel.assertQueue(this.actorParams.queue, this.actorParams.queueOptions);
+        await this.channel.prefetch(3);
 
-    log.debug('rabbi.amqp.binding.created', this.toJSON());
+        resolve(this.channel);
 
-    await this.channel.bindQueue(
-      this.actorParams.queue,
-      this.actorParams.exchange,
-      this.actorParams.routingkey
-    );
+      })
 
-    await this.channel.prefetch(3);
-
-    return this.channel;
+    })
 
   }
 
