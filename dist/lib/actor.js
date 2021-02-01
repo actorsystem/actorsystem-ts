@@ -18,7 +18,6 @@ class Actor extends events_1.EventEmitter {
     constructor(actorParams) {
         super();
         this.heartbeatMilliseconds = 10000; // Timeout from setInterval
-        console.log("ACTOR PARAMS", actorParams);
         this.hostname = os.hostname();
         this.actorParams = actorParams;
         if (!actorParams.queue) {

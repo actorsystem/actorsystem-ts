@@ -105,8 +105,6 @@ export class Actor extends EventEmitter {
 
     super();
 
-    console.log("ACTOR PARAMS", actorParams)
-
     this.hostname = os.hostname();
 
     this.actorParams = actorParams;
