@@ -1,26 +1,24 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.startActors = exports.getDirectories = void 0;
 require('dotenv').config();
 const fs = require("fs");
 const path = require("path");
 const lodash_1 = require("lodash");
 const actor_1 = require("./actor");
-Object.defineProperty(exports, "Actor", { enumerable: true, get: function () { return actor_1.Actor; } });
+exports.Actor = actor_1.Actor;
 const logger_1 = require("./logger");
-Object.defineProperty(exports, "log", { enumerable: true, get: function () { return logger_1.log; } });
+exports.log = logger_1.log;
 const amqp_1 = require("./amqp");
-Object.defineProperty(exports, "getConnection", { enumerable: true, get: function () { return amqp_1.getConnection; } });
-Object.defineProperty(exports, "getChannel", { enumerable: true, get: function () { return amqp_1.getChannel; } });
+exports.getConnection = amqp_1.getConnection;
+exports.getChannel = amqp_1.getChannel;
 const Joi = require("joi");
 exports.Joi = Joi;
 function getDirectories(source) {

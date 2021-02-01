@@ -1,15 +1,13 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Actor = void 0;
 const events_1 = require("events");
 const logger_1 = require("./logger");
 const amqp_1 = require("./amqp");
@@ -20,10 +18,14 @@ class Actor extends events_1.EventEmitter {
     constructor(actorParams) {
         super();
         this.heartbeatMilliseconds = 10000; // Timeout from setInterval
+        console.log("ACTOR PARAMS", actorParams);
         this.hostname = os.hostname();
         this.actorParams = actorParams;
         if (!actorParams.queue) {
             this.actorParams.queue = actorParams.routingkey;
+        }
+        if (!actorParams.exchangeType) {
+            this.actorParams.exchangeType = 'direct';
         }
         if (!actorParams.routingkey) {
             this.actorParams.routingkey = actorParams.queue;
@@ -56,7 +58,7 @@ class Actor extends events_1.EventEmitter {
             this.channel = yield this.connection.createChannel();
             logger_1.log.info('rabbi.amqp.channel.created');
             //this.channel.checkExchange(this.actorParams.exchange, async (err) => {
-            yield this.channel.assertExchange(this.actorParams.exchange, 'direct');
+            yield this.channel.assertExchange(this.actorParams.exchange, this.actorParams.exchangeType);
             yield this.channel.assertQueue(this.actorParams.queue, this.actorParams.queueOptions);
             logger_1.log.info('rabbi.amqp.binding.created', this.toJSON());
             yield this.channel.bindQueue(this.actorParams.queue, this.actorParams.exchange, this.actorParams.routingkey);

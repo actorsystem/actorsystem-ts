@@ -79,7 +79,7 @@ export class Actor extends EventEmitter {
 
       //this.channel.checkExchange(this.actorParams.exchange, async (err) => {
 
-        await this.channel.assertExchange(this.actorParams.exchange, 'direct');
+        await this.channel.assertExchange(this.actorParams.exchange, this.actorParams.exchangeType);
 
         await this.channel.assertQueue(this.actorParams.queue, this.actorParams.queueOptions);
 
@@ -105,12 +105,18 @@ export class Actor extends EventEmitter {
 
     super();
 
+    console.log("ACTOR PARAMS", actorParams)
+
     this.hostname = os.hostname();
 
     this.actorParams = actorParams;
 
     if (!actorParams.queue) {
       this.actorParams.queue = actorParams.routingkey;
+    }
+
+    if (!actorParams.exchangeType) {
+      this.actorParams.exchangeType = 'direct';
     }
 
     if (!actorParams.routingkey) {
@@ -253,6 +259,8 @@ export interface ActorConnectionParams {
   schema?: Joi.Schema;
 
   queueOptions?: object;  
+
+  exchangeType?: string;
 
 }
 
