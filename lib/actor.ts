@@ -91,7 +91,7 @@ export class Actor extends EventEmitter {
           this.actorParams.routingkey
         );
 
-        await this.channel.prefetch(3);
+        await this.channel.prefetch(this.actorParams.prefetch || 3);
 
         resolve(this.channel);
 
@@ -225,7 +225,10 @@ export class Actor extends EventEmitter {
 
         } catch(error) {
 
-          console.error('rabbi.exception.caught', error.message);
+          console.error('rabbi.exception', {
+            error: error.message,
+            queue: this.actorParams.queue
+          });
 
           await channel.ack(msg); // auto acknowledge
 
@@ -259,6 +262,8 @@ export interface ActorConnectionParams {
   queueOptions?: object;  
 
   exchangeType?: string;
+
+  prefetch?: number;
 
 }
 

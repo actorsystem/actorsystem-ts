@@ -61,7 +61,7 @@ class Actor extends events_1.EventEmitter {
             yield this.channel.assertQueue(this.actorParams.queue, this.actorParams.queueOptions);
             logger_1.log.info('rabbi.amqp.binding.created', this.toJSON());
             yield this.channel.bindQueue(this.actorParams.queue, this.actorParams.exchange, this.actorParams.routingkey);
-            yield this.channel.prefetch(3);
+            yield this.channel.prefetch(this.actorParams.prefetch || 3);
             resolve(this.channel);
             //})
         }));
@@ -118,7 +118,10 @@ class Actor extends events_1.EventEmitter {
                         let result = yield consumer(channel, msg, json);
                     }
                     catch (error) {
-                        console.error('rabbi.exception.caught', error.message);
+                        console.error('rabbi.exception', {
+                            error: error.message,
+                            queue: this.actorParams.queue
+                        });
                         yield channel.ack(msg); // auto acknowledge
                     }
                 }
