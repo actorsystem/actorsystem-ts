@@ -32,7 +32,7 @@ function getConnection() {
                 port: parseInt(parsed.port),
                 output: 'silent'
             });
-            connection = yield amqplib_1.connect(AMQP_URL);
+            connection = yield (0, amqplib_1.connect)(AMQP_URL);
             connecting = false;
             logger_1.log.debug('amqp.amqp.connected');
         }

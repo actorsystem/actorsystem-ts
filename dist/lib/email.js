@@ -16,8 +16,8 @@ const AWS = require("aws-sdk");
 AWS.config.update({ region: "us-east-1" });
 const path_1 = require("path");
 const fs_1 = require("fs");
-const emailsDirectory = path_1.join(process.cwd(), 'emails');
-const emails = fs_1.existsSync(emailsDirectory) ? Object.entries(requireAll(emailsDirectory)).map(([key, value]) => {
+const emailsDirectory = (0, path_1.join)(process.cwd(), 'emails');
+const emails = (0, fs_1.existsSync)(emailsDirectory) ? Object.entries(requireAll(emailsDirectory)).map(([key, value]) => {
     let e = value;
     return [key, e.index.default];
 })

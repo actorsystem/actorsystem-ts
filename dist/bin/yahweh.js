@@ -18,7 +18,7 @@ const Hapi = require("hapi");
 const actors_1 = require("../lib/actors");
 function start() {
     return __awaiter(this, void 0, void 0, function* () {
-        let channel = yield amqp_1.getChannel();
+        let channel = yield (0, amqp_1.getChannel)();
         channel.assertExchange('rabbi', 'topic');
         let actor = actor_1.Actor.create({
             exchange: 'rabbi',
@@ -28,7 +28,7 @@ function start() {
             .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
             console.log('actor.started', json);
             //log.info(JSON.stringify(json));
-            actors_1.actorStarted(json);
+            (0, actors_1.actorStarted)(json);
             channel.ack(msg);
         }));
         actor_1.Actor.create({
@@ -39,7 +39,7 @@ function start() {
             .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
             console.log('actor.stopped', json);
             //log.info(JSON.stringify(json));
-            actors_1.actorStopped(json);
+            (0, actors_1.actorStopped)(json);
             channel.ack(msg);
         }));
         actor_1.Actor.create({
@@ -50,7 +50,7 @@ function start() {
             .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
             console.log('actor.error', json);
             //log.info(JSON.stringify(json));
-            actors_1.actorError(json);
+            (0, actors_1.actorError)(json);
             channel.ack(msg);
         }));
         actor_1.Actor.create({
@@ -60,7 +60,7 @@ function start() {
         })
             .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
             console.log('actor.heartbeat', json);
-            actors_1.actorHeartbeat(json);
+            (0, actors_1.actorHeartbeat)(json);
             channel.ack(msg);
         }));
         const server = Hapi.server({
@@ -103,8 +103,8 @@ function start() {
             method: 'GET',
             path: '/api/dashboard',
             handler: (request, h) => __awaiter(this, void 0, void 0, function* () {
-                let hosts = yield actors_1.listHosts();
-                let actors = yield actors_1.listActors();
+                let hosts = yield (0, actors_1.listHosts)();
+                let actors = yield (0, actors_1.listActors)();
                 return { hosts, actors };
             }),
             config: {

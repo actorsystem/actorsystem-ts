@@ -31,7 +31,7 @@ program
     }
     switch (command) {
         case 'send':
-            let resp = yield email_1.sendEmail(name, args.destination, args.from, variables);
+            let resp = yield (0, email_1.sendEmail)(name, args.destination, args.from, variables);
             console.log(resp);
             process.exit(0);
         default:
@@ -42,7 +42,7 @@ program
     }
     // check for directory, fail if already exists
     let directory = path.join(process.cwd(), 'emails', name);
-    if (fs_1.existsSync(directory)) {
+    if ((0, fs_1.existsSync)(directory)) {
         console.log(`rabbi> directory emails/${name} already exists`);
         process.exit(0);
     }

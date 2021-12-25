@@ -53,7 +53,7 @@ class Actor extends events_1.EventEmitter {
                 this.connection = connection;
             }
             else {
-                this.connection = yield amqp_1.getConnection();
+                this.connection = yield (0, amqp_1.getConnection)();
                 logger_1.log.info(`rabbi.amqp.connected`);
             }
             this.channel = yield this.connection.createChannel();

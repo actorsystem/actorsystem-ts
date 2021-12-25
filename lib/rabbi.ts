@@ -11,6 +11,10 @@ import { log } from './logger';
 
 import { getConnection, getChannel } from './amqp';
 
+import { store } from './store'
+
+export { events } from './events'
+
 import * as Joi from 'joi';
 
 export function getDirectories(source) {
