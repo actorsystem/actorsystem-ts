@@ -17,6 +17,8 @@ export { events } from './events'
 
 import * as Joi from 'joi';
 
+import * as delay from 'delay';
+
 export function getDirectories(source) {
   return fs.readdirSync(source, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
@@ -34,8 +36,14 @@ export function startActors(actorNames=[]) {
 
 }
 
+export async function init() {
 
-import * as delay from 'delay';
+  let channel = await getChannel()
+
+  await channel.assertExchange('rabbi.events', 'direct')
+
+}
+
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.startActors = exports.getDirectories = exports.events = void 0;
+exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.getDirectories = exports.events = void 0;
 require('dotenv').config();
 const fs = require("fs");
 const path = require("path");
@@ -25,6 +25,8 @@ var events_1 = require("./events");
 Object.defineProperty(exports, "events", { enumerable: true, get: function () { return events_1.events; } });
 const Joi = require("joi");
 exports.Joi = Joi;
+const delay = require("delay");
+exports.delay = delay;
 function getDirectories(source) {
     return fs.readdirSync(source, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
@@ -38,8 +40,13 @@ function startActors(actorNames = []) {
         .forEach(actor => actor.start());
 }
 exports.startActors = startActors;
-const delay = require("delay");
-exports.delay = delay;
+function init() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let channel = yield (0, amqp_1.getChannel)();
+        yield channel.assertExchange('rabbi.events', 'direct');
+    });
+}
+exports.init = init;
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
