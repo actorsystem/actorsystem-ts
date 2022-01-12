@@ -1,30 +1,30 @@
 
-
-const knex = require('knex')
+//import * as models from '../models'
 
 export class EventStore {
 
-  eventTable: string = 'rabbi_events';
+  eventTable: string = 'RabbiEvents';
 
-  pg: any;
+  models: any;
 
   isAvailable: boolean = false
 
   constructor() {
 
-    if (process.env.RABBI_POSTGRES_URL) {
+    if (process.env.RABBI_DATABASE_URL) {
 
-      this.configureStore(process.env.RABBI_POSTGRES_URL) 
+      console.log('configure in constructor')
+
+      this.configureStore(process.env.RABBI_DATABASE_URL) 
     }
 
   }
 
-  async configureStore(connection: any, table:string = this.eventTable) {
+  async configureStore(url: string, table:string = this.eventTable) {
 
-    this.pg = knex({
-      client: 'pg',
-      connection
-    });
+    console.log('configure store', url)
+
+    this.models = require('../models')(url)
 
     this.eventTable = table;
 
@@ -34,7 +34,17 @@ export class EventStore {
 
   async storeEvent(event: string, payload: any) {
 
-    return this.pg(this.eventTable).insert({ event, payload })
+    try {
+
+      let result = await this.models.RabbiEvent.create({event, payload})
+
+      return result
+
+    } catch(error) {
+
+      console.error('rabbi.store.error', error)
+
+    }
 
   }
 

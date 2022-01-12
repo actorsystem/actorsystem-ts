@@ -1,4 +1,5 @@
 "use strict";
+//import * as models from '../models'
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10,28 +11,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.store = exports.EventStore = void 0;
-const knex = require('knex');
 class EventStore {
     constructor() {
-        this.eventTable = 'rabbi_events';
+        this.eventTable = 'RabbiEvents';
         this.isAvailable = false;
-        if (process.env.RABBI_POSTGRES_URL) {
-            this.configureStore(process.env.RABBI_POSTGRES_URL);
+        if (process.env.RABBI_DATABASE_URL) {
+            console.log('configure in constructor');
+            this.configureStore(process.env.RABBI_DATABASE_URL);
         }
     }
-    configureStore(connection, table = this.eventTable) {
+    configureStore(url, table = this.eventTable) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.pg = knex({
-                client: 'pg',
-                connection
-            });
+            console.log('configure store', url);
+            this.models = require('../models')(url);
             this.eventTable = table;
             this.isAvailable = true;
         });
     }
     storeEvent(event, payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.pg(this.eventTable).insert({ event, payload });
+            try {
+                let result = yield this.models.RabbiEvent.create({ event, payload });
+                return result;
+            }
+            catch (error) {
+                console.error('rabbi.store.error', error);
+            }
         });
     }
 }

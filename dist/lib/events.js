@@ -15,22 +15,30 @@ const store_1 = require("./store");
 const amqp_1 = require("./amqp");
 class Events {
     constructor() {
+        this.exchange = 'rabbi.events';
         this.emitter = new EventEmitter2({
             wildcard: true
         });
+        this.init();
         this.store = store_1.store;
     }
     on(event, callback) {
         this.emitter.on(event, callback);
     }
+    init() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let channel = yield (0, amqp_1.getChannel)();
+            channel.assertExchange(this.exchange, 'direct');
+        });
+    }
     emit(event, payload = {}) {
         return __awaiter(this, void 0, void 0, function* () {
             this.emitter.emit(event, payload);
-            if (this.store.isAvailable) {
-                this.store.storeEvent(event, payload);
-            }
             let channel = yield (0, amqp_1.getChannel)();
-            return channel.publish('rabbi.events', event, Buffer.from(JSON.stringify(payload)));
+            channel.publish(this.exchange, event, Buffer.from(JSON.stringify(payload)));
+            if (this.store.isAvailable) {
+                return this.store.storeEvent(event, payload);
+            }
         });
     }
 }

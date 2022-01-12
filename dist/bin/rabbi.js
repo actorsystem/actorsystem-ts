@@ -95,5 +95,9 @@ program
     });
 }));
 program
+    .command('db:table:create [table_name]')
+    .action((tableName = 'rabbi_events') => __awaiter(void 0, void 0, void 0, function* () {
+}));
+program
     .parse(process.argv);
 //# sourceMappingURL=rabbi.js.map

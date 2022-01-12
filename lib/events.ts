@@ -11,6 +11,8 @@ class Events {
 
   store: EventStore;
 
+  exchange: string = 'rabbi.events';
+
   emitter: any;
 
   constructor() {
@@ -18,6 +20,8 @@ class Events {
     this.emitter = new EventEmitter2({
       wildcard: true
     })
+
+    this.init()
 
     this.store = store;
   }
@@ -27,21 +31,28 @@ class Events {
     this.emitter.on(event, callback)
   }
 
-  async emit(event: string, payload: any = {}) {
-
-    this.emitter.emit(event, payload)
-
-    if (this.store.isAvailable) {
-
-      this.store.storeEvent(event, payload)
-
-    }
+  async init() {
 
     let channel = await getChannel()
 
-    return channel.publish('rabbi.events', event, Buffer.from(
+    channel.assertExchange(this.exchange, 'direct')
+  }
+
+  async emit(event: string, payload: any = {}): Promise<any> {
+
+    this.emitter.emit(event, payload)
+
+    let channel = await getChannel()
+
+    channel.publish(this.exchange, event, Buffer.from(
       JSON.stringify(payload)
     ));
+
+    if (this.store.isAvailable) {
+
+      return this.store.storeEvent(event, payload)
+
+    }
 
   }
 

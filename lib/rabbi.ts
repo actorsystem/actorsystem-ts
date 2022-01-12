@@ -13,6 +13,8 @@ import { getConnection, getChannel } from './amqp';
 
 import { store } from './store'
 
+export { store }
+
 export { events } from './events'
 
 import * as Joi from 'joi';
@@ -23,6 +25,20 @@ export function getDirectories(source) {
   return fs.readdirSync(source, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name)
+}
+
+interface Configuration {
+  store?: any;
+  amqp?: string;
+}
+
+export async function configure(config: Configuration) {
+
+  if (config.store) {
+
+    store.configureStore(config.store)
+  }
+
 }
 
 export function startActors(actorNames=[]) {
