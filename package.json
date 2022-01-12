@@ -8,7 +8,7 @@
   "main": "./dist/lib/rabbi.js",
   "scripts": {
     "test": "mocha -r ts-node/register test/events_test.ts --timeout=5000",
-    "build": "tsc && cp -r templates dist/templates"
+    "build": "tsc && cp -r templates dist/templates && cp -r models dist/"
   },
   "repository": {
     "type": "git",
