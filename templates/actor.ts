@@ -14,7 +14,7 @@ export async function start() {
 
     queue: '',
 
-    schema: Joi.object() // optional, enforces validity of json schema
+    schema: Joi.object() // optional, enforces validity of json schema: see json schema documentation https://ajv.js.org/json-type-definition.html
 
   })
   .start(async (channel, msg, json) => {

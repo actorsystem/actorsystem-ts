@@ -13,6 +13,8 @@ exports.Actor = void 0;
 const events_1 = require("events");
 const logger_1 = require("./logger");
 const amqp_1 = require("./amqp");
+const ajv_1 = require("ajv");
+const ajv = new ajv_1.default();
 const publicIp = require('public-ip');
 const os = require("os");
 const bsv = require("bsv");
@@ -34,6 +36,10 @@ class Actor extends events_1.EventEmitter {
         if (!this.privateKey) {
             this.privateKey = new bsv.PrivateKey();
             this.id = this.privateKey.toAddress().toString();
+        }
+        if (actorParams.schema) {
+            this.schema = actorParams.schema;
+            this.validateSchema = ajv.compile(this.schema);
         }
     }
     toJSON() {
@@ -109,9 +115,8 @@ class Actor extends events_1.EventEmitter {
                 catch (error) {
                 }
                 if (this.schema) {
-                    let result = this.schema.validate(json);
-                    if (result.error) {
-                        logger_1.log.error('schema.invalid', result.error);
+                    if (!this.validateSchema(json)) {
+                        logger_1.log.error('schema.invalid', this.validateSchema.errors);
                         return channel.ack(msg);
                     }
                 }

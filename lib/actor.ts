@@ -7,6 +7,10 @@ import { log } from './logger';
 
 import { getConnection } from './amqp';
 
+import  Ajv from 'ajv'
+
+const ajv = new Ajv()
+
 const publicIp = require('public-ip');
 
 import * as os from 'os';
@@ -32,6 +36,8 @@ export class Actor extends EventEmitter {
   ip: string;
 
   schema: Joi.Schema;
+
+  validateSchema?: any;
 
   heartbeatMilliseconds: number = 10000; // Timeout from setInterval
 
@@ -126,6 +132,13 @@ export class Actor extends EventEmitter {
       this.id = this.privateKey.toAddress().toString()
     }
 
+    if (actorParams.schema) {
+
+      this.schema = actorParams.schema
+      this.validateSchema = ajv.compile(this.schema)
+
+    }
+
   }
 
   static create(connectionInfo: ActorConnectionParams) {
@@ -205,11 +218,9 @@ export class Actor extends EventEmitter {
 
       if (this.schema) {
 
-        let result = this.schema.validate(json);
+        if (!this.validateSchema(json)) {
 
-        if (result.error) {
-
-          log.error('schema.invalid', result.error);
+          log.error('schema.invalid', this.validateSchema.errors);
 
           return channel.ack(msg);
   
