@@ -1,30 +1,28 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.configure = exports.getDirectories = exports.events = exports.store = void 0;
 require('dotenv').config();
 const fs = require("fs");
 const path = require("path");
 const lodash_1 = require("lodash");
 const actor_1 = require("./actor");
-Object.defineProperty(exports, "Actor", { enumerable: true, get: function () { return actor_1.Actor; } });
+exports.Actor = actor_1.Actor;
 const logger_1 = require("./logger");
-Object.defineProperty(exports, "log", { enumerable: true, get: function () { return logger_1.log; } });
+exports.log = logger_1.log;
 const amqp_1 = require("./amqp");
-Object.defineProperty(exports, "getConnection", { enumerable: true, get: function () { return amqp_1.getConnection; } });
-Object.defineProperty(exports, "getChannel", { enumerable: true, get: function () { return amqp_1.getChannel; } });
+exports.getConnection = amqp_1.getConnection;
+exports.getChannel = amqp_1.getChannel;
 const store_1 = require("./store");
-Object.defineProperty(exports, "store", { enumerable: true, get: function () { return store_1.store; } });
+exports.store = store_1.store;
 var events_1 = require("./events");
-Object.defineProperty(exports, "events", { enumerable: true, get: function () { return events_1.events; } });
+exports.events = events_1.events;
 const Joi = require("joi");
 exports.Joi = Joi;
 const delay = require("delay");
@@ -52,7 +50,7 @@ function startActors(actorNames = []) {
 exports.startActors = startActors;
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
-        let channel = yield (0, amqp_1.getChannel)();
+        let channel = yield amqp_1.getChannel();
         yield channel.assertExchange('rabbi.events', 'direct');
     });
 }
@@ -102,12 +100,12 @@ function startActorsDirectory(directoryIndexPath, opts = {
                 }
             }, tmpHandle);
         });
-        actors = (0, lodash_1.reject)(actors, a => !a);
+        actors = lodash_1.reject(actors, a => !a);
         let shouldExclude = buildShouldExclude(opts.exclude);
-        actors = (0, lodash_1.reject)(actors, actor => shouldExclude(actor.name));
+        actors = lodash_1.reject(actors, actor => shouldExclude(actor.name));
         if (opts.include && opts.include.length > 0) {
             let included = buildIncluded(opts.include);
-            actors = (0, lodash_1.filter)(actors, actor => included(actor.name));
+            actors = lodash_1.filter(actors, actor => included(actor.name));
         }
         actors.forEach(actor => require(actor.path).start());
         return actors;
@@ -115,7 +113,7 @@ function startActorsDirectory(directoryIndexPath, opts = {
 }
 exports.startActorsDirectory = startActorsDirectory;
 function buildShouldExclude(excludeOpts) {
-    let exclusions = (0, lodash_1.reduce)(excludeOpts, (exclusions, actorName) => {
+    let exclusions = lodash_1.reduce(excludeOpts, (exclusions, actorName) => {
         exclusions[actorName] = true;
         return exclusions;
     }, {});
@@ -124,7 +122,7 @@ function buildShouldExclude(excludeOpts) {
     };
 }
 function buildIncluded(includeOpts) {
-    var inclusions = (0, lodash_1.reduce)(includeOpts, (inclusions, actorName) => {
+    var inclusions = lodash_1.reduce(includeOpts, (inclusions, actorName) => {
         inclusions[actorName] = true;
         return inclusions;
     }, {});

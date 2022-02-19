@@ -170,24 +170,6 @@ export class Actor extends EventEmitter {
 
   async start(consumer?: (channel: any, msg: any, json?: any) => Promise<void>) {
 
-    process.on('SIGINT', async () => {
-
-      await this.channel.publish('rabbi', 'actor.stopped', Buffer.from(JSON.stringify(
-        this.toJSON()
-      )));
-
-
-      setTimeout(() => {
-
-        this.channel.close();
-
-        process.kill(process.pid, 'SIGKILL');
-
-      }, 500)
-
-    })
-
-
     var json;
 
     let channel = await this.connectAmqp(this.actorParams.connection);

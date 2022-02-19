@@ -1,23 +1,21 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendEmail = exports.send = void 0;
 require('dotenv').config();
 const requireAll = require("require-all");
 const AWS = require("aws-sdk");
 AWS.config.update({ region: "us-east-1" });
 const path_1 = require("path");
 const fs_1 = require("fs");
-const emailsDirectory = (0, path_1.join)(process.cwd(), 'emails');
-const emails = (0, fs_1.existsSync)(emailsDirectory) ? Object.entries(requireAll(emailsDirectory)).map(([key, value]) => {
+const emailsDirectory = path_1.join(process.cwd(), 'emails');
+const emails = fs_1.existsSync(emailsDirectory) ? Object.entries(requireAll(emailsDirectory)).map(([key, value]) => {
     let e = value;
     return [key, e.index.default];
 })
@@ -93,7 +91,6 @@ function sendEmail(templateName, emailAddress, fromEmail, vars = {}) {
             Source: fromEmail,
             ReplyToAddresses: [
                 'steven@anypayinc.com',
-                /* more items */
             ],
         };
         // Create the promise and SES service object

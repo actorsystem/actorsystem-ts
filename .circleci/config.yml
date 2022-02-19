@@ -1,0 +1,54 @@
+version: 2.1
+jobs:
+  test:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:12
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name:  Build Application
+          command: npm install
+      - run:
+          name: Run Tests
+          command: npm test
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+
+  release:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:12
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Compile from Typescript to Javascript
+          command: npm run build
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_CONFIG_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: Publish to NPM
+          command: npm publish
+
+workflows:
+  version: 2
+  test_and_release:
+    jobs:
+      - test
+      - release:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - release
+

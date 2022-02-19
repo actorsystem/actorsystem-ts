@@ -1,11 +1,10 @@
 #!/usr/bin/env ts-node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -24,14 +23,14 @@ program
     .option('-f, --from [from]', 'from email address')
     .option('-t, --template [template]', 'template to use')
     .option('-v, --variables [from]', 'from email address')
-    .action((command, name, args) => __awaiter(void 0, void 0, void 0, function* () {
+    .action((command, name, args) => __awaiter(this, void 0, void 0, function* () {
     var variables;
     if (args.v) {
         variables = JSON.parse(args.v);
     }
     switch (command) {
         case 'send':
-            let resp = yield (0, email_1.sendEmail)(name, args.destination, args.from, variables);
+            let resp = yield email_1.sendEmail(name, args.destination, args.from, variables);
             console.log(resp);
             process.exit(0);
         default:
@@ -42,7 +41,7 @@ program
     }
     // check for directory, fail if already exists
     let directory = path.join(process.cwd(), 'emails', name);
-    if ((0, fs_1.existsSync)(directory)) {
+    if (fs_1.existsSync(directory)) {
         console.log(`rabbi> directory emails/${name} already exists`);
         process.exit(0);
     }
@@ -59,7 +58,7 @@ program
     .option('-a, --actors [actors]', 'List of actors to run')
     .option('-e, --exclude [exclude]', 'List of actors to exclude')
     .option('-d, --directory [directory]', 'Path to directory')
-    .action((args) => __awaiter(void 0, void 0, void 0, function* () {
+    .action((args) => __awaiter(this, void 0, void 0, function* () {
     var directory;
     if (args.directory) {
         if (args.directory.match(/^\//)) {
@@ -83,7 +82,7 @@ program
     .option('-e, --exchange [exchange]', 'AMQP exchange')
     .option('-r, --routingkey [routingkey]', 'AMQP routing key')
     .option('-q, --queue [queue]', 'AMQP queue')
-    .action((actorName, args) => __awaiter(void 0, void 0, void 0, function* () {
+    .action((actorName, args) => __awaiter(this, void 0, void 0, function* () {
     let p = path.join(process.cwd(), 'actors', actorName);
     mkdirp(p, function () {
         return __awaiter(this, void 0, void 0, function* () {
@@ -96,7 +95,7 @@ program
 }));
 program
     .command('db:table:create [table_name]')
-    .action((tableName = 'rabbi_events') => __awaiter(void 0, void 0, void 0, function* () {
+    .action((tableName = 'rabbi_events') => __awaiter(this, void 0, void 0, function* () {
 }));
 program
     .parse(process.argv);
