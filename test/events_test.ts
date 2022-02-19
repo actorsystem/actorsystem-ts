@@ -13,7 +13,7 @@ describe('Events', () => {
 
   })
 
-  it('#emit should not persist an event when database is not available', async () => {
+  it.skip('#emit should not persist an event when database is not available', async () => {
 
     assert(!store.isAvailable)
 
