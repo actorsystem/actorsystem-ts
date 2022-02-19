@@ -6,7 +6,6 @@ jobs:
       - image: circleci/node:12
     steps:
       - checkout
-      - setup_remote_docker
       - run:
           name:  Build Application
           command: npm install
