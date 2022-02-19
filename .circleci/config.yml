@@ -22,6 +22,9 @@ jobs:
       - run:
           name: Run Tests
           command: npm test
+      - run:
+          name: Create Database Table
+          command: npm run db:migrate
       - save_cache:
           paths:
             - node_modules
