@@ -1,5 +1,7 @@
 
-import { email } from '../lib/email';
+import { assert } from './utils'
+
+import * as email from '../lib/email';
 
 describe("Email", () => {
 

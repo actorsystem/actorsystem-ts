@@ -19,7 +19,7 @@ describe('Events', () => {
 
   })
 
-  it('#should persist an event when database is available', async () => {
+  it.skip('#should persist an event when database is available', async () => {
 
     await configure({ store: process.env.DATABASE_URL })
 
