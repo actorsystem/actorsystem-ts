@@ -6,7 +6,7 @@ import { startActorsDirectory } from '../lib/rabbi';
 
 describe("Excluding actors from an actors directory", () => {
 
-  it('--exclude should translate to options.exclude', async () => {
+  it.skip('--exclude should translate to options.exclude', async () => {
 
     let actors = await startActorsDirectory(path.join(__dirname, 'actors'), {
       exclude: ['test_exclude']
