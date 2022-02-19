@@ -7,7 +7,8 @@
   },
   "main": "./dist/lib/rabbi.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha -r ts-node/register test/*_test.ts --timeout=5000",
+    "test": "NODE_ENV=test mocha -r ts-node/register test/*_test.ts --timeout=5000 --exit",
+    "runtest": "NODE_ENV=test mocha -r ts-node/register $TEST --timeout=5000 --exit",
     "db:migrate": "sequelize db:migrate --url=$DATABASE_URL",
     "build": "tsc && cp -r templates dist/templates && cp -r models dist/"
   },
