@@ -4,6 +4,16 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: circleci/node:12
+      - image: circleci/postgres:9.5-postgis
+        environment:
+          POSTGRES_USER: rabbi
+          POSTGRES_DB: rabbi
+          POSTGRES_PASSWORD: "letmein"
+      - image: rabbitmq:3
+        environment:
+          DEFAULT_USER: rabbi
+          DEFAULT_PASS: "letmein"
+          RABBITMQ_DEFAULT_VHOST: rabbi
     steps:
       - checkout
       - run:
