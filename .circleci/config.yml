@@ -24,7 +24,7 @@ jobs:
           command: npm test
       - run:
           name: Create Database Table
-          command: npm run db:migrate
+          command: npx sequelize db:migrate --url=$DATABASE_URL
       - save_cache:
           paths:
             - node_modules
