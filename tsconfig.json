@@ -8,7 +8,8 @@
     "module": "commonjs",
     "outDir": "./dist",
 		"sourceMap": true,
-		"sourceRoot": "."
+		"sourceRoot": ".",
+    "strictNullChecks": true
   },
   "include": [
     "bin",

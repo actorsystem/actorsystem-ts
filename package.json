@@ -68,6 +68,7 @@
   "devDependencies": {
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
+    "chai-spies": "^1.0.0",
     "chance": "^1.1.8",
     "sequelize": "^6.16.2",
     "sequelize-cli": "^6.4.1",

@@ -16,6 +16,10 @@ require('dotenv').config();
 
 const AMQP_URL = process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672/';
 
+import * as amqp from 'amqplib'
+
+export { amqp }
+
 export async function getConnection() {
 
   while (connecting) {
@@ -28,7 +32,7 @@ export async function getConnection() {
 
     connecting = true;
 
-    let parsed = url.parse(AMQP_URL);
+    let parsed: any = url.parse(AMQP_URL);
 
     await waitPort({
       host: parsed.hostname,
