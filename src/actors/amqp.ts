@@ -1,11 +1,11 @@
 
-import { BaseActor, BaseNewActor, MessageHandler, Message } from './base_actor'
+import { BaseActor, BaseNewActor, MessageHandler, Message } from './base'
 
 import { Channel, Connection, ConsumeMessage } from 'amqplib'
 
-import { getConnection, getChannel } from './amqp'
+import { getConnection, getChannel } from '../amqp'
 
-import { log } from './logger'
+import { log } from '../logger'
 
 import { v4 } from 'uuid'
 

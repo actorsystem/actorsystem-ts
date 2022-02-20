@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 
 import  Ajv, { JSONSchemaType } from 'ajv'
 
-import { log } from './logger'
+import { log } from '../logger'
 
 const ajv = new Ajv()
 

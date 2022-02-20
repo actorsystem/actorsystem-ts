@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  rabbi:
+    build: .
+    environment:
+      AMQP_URL: amqp://rabbi:letmein@rabbitmq:5672/rabbi
+      DATABASE_URL: postgres://rabbi:letmein@postgres/rabbi
+      NODE_ENV: development
+    command: rabbi start
+    depends_on:
+      - rabbitmq
+      - postgres
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      AMQP_URL: amqp://rabbi:letmein@rabbitmq/rabbi
+  postgres:
+    image: "postgres"
+    environment:
+      POSTGRES_USER: rabbi
+      POSTGRES_DB: rabbi
+      POSTGRES_PASSWORD: letmein
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    environment:
+      DEFAULT_USER: rabbi
+      DEFAULT_PASS: letmein
+      DEFAULT_VHOST: rabbi
+

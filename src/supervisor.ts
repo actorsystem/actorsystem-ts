@@ -1,65 +1,22 @@
-require('dotenv').config();
 
-import * as fs from 'fs';
-import * as path from 'path';
+import { join } from 'path'
 
 import { reject, reduce, filter } from 'lodash';
 
-import { Actor } from './actor';
+import { readdirSync } from 'fs'
 
-import { log } from './logger';
-
-import { getConnection, getChannel } from './amqp';
-
-import { store } from './store'
-
-export { store }
-
-export { events } from './events'
-
-import * as Joi from 'joi';
-
-import * as delay from 'delay';
-
-export function getDirectories(source) {
-  return fs.readdirSync(source, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name)
-}
-
-interface Configuration {
-  store?: any;
-  amqp?: string;
-}
-
-export async function configure(config: Configuration) {
-
-  if (config.store) {
-
-    store.configureStore(config.store)
-  }
-
-}
+import { BaseActor } from './base_actor'
 
 export function startActors(actorNames=[]) {
 
   actorNames.map(actorName => {
 
-    return require(path.join(process.cwd(), 'actors', actorName, 'actor.ts'));
+    return require(join(process.cwd(), 'actors', actorName, 'actor.ts'));
 
   })
   .forEach(actor => actor.start());
 
 }
-
-export async function init() {
-
-  let channel = await getChannel()
-
-  await channel.assertExchange('rabbi.events', 'direct')
-
-}
-
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -84,25 +41,6 @@ function requireHandlersDirectory(dirname) {
   return handlers;
 }
 
-import * as email from './email';
-
-export function jToB(json): Buffer {
-
-  return Buffer.from(JSON.stringify(json))
-
-}
-
-export {
-  Actor,
-  log,
-  getConnection,
-  getChannel,
-  delay,
-  Joi,
-  email,
-  requireHandlersDirectory
-}
-
 interface StartActorsDirectoryOpts {
   exclude?: string[];
   include?: string[];
@@ -111,7 +49,7 @@ interface StartActorsDirectoryOpts {
 interface ActorHandle {
   path: string,
   name: string,
-  actor?: Actor
+  actor?: BaseActor
 }
 
 export async function startActorsDirectory(directoryIndexPath: string,
@@ -126,13 +64,13 @@ export async function startActorsDirectory(directoryIndexPath: string,
 
   let actors: any[] = directories.map(directory => {
 
-    var dir = path.join(directoryIndexPath, directory);
+    var dir = join(directoryIndexPath, directory);
 
-    return fs.readdirSync(dir).reduce((actorFile, file) => {
+    return readdirSync(dir).reduce((actorFile, file) => {
 
       if (file === 'actor.ts') {
 
-        let a = path.join(dir, file);
+        let a = join(dir, file);
 
         return {
           path: a,
@@ -150,9 +88,13 @@ export async function startActorsDirectory(directoryIndexPath: string,
 
   actors = reject(actors, a => !a);
 
-  let shouldExclude = buildShouldExclude(opts.exclude);
+  if (opts.exclude) {
 
-  actors = reject(actors, actor => shouldExclude(actor.name));
+    let shouldExclude = buildShouldExclude(opts.exclude);
+
+    actors = reject(actors, actor => shouldExclude(actor.name));
+
+  }
 
   if (opts.include && opts.include.length > 0) {
     let included = buildIncluded(opts.include);
@@ -200,4 +142,11 @@ function buildIncluded(includeOpts: any[]) {
   }
 
 }
+
+export function getDirectories(source) {
+  return readdirSync(source, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name)
+}
+
 

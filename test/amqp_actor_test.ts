@@ -3,11 +3,11 @@ require('dotenv').config()
 
 import { spy, expect, assert } from './utils'
 
-import { getChannel, getConnection } from '../lib/amqp'
+import { getChannel, getConnection } from '../src/amqp'
 
 import { Channel, Connection } from 'amqplib'
 
-import { AmqpActor } from '../lib/amqp_actor'
+import { AmqpActor } from '../src/actors/amqp'
 
 describe('AMQP Actor', () => {
 

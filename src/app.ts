@@ -2,22 +2,31 @@
 import { EventEmitter } from 'events'
 
 interface NewApp {
+
   identity: string;
+
 }
 
-import { BaseActor } from './base_actor' 
+import { BaseActor } from './actors/base' 
 
 interface NewMessage {
+
   event: string;
+
   data: any;
+
 }
 
 type ActorsMap = {
-  [event: string]: BaseActor ;
+
+  [event: string]: BaseActor;
+
 }
 
 class DuplicateActor implements Error {
+
   name = "DuplicateActor"
+
   message = `App already contains event with name` 
 
   constructor(event: string, app: App) {

@@ -12,10 +12,8 @@ RUN yarn global add ts-node
 
 RUN yarn 
 
-RUN tsc
-
 # Bundle app source
 COPY . /usr/src/app
 
-CMD ./dist/bin/yahweh.js
+CMD npm test
 

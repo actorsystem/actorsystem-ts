@@ -1,15 +1,10 @@
 
 import { connect, Connection, Channel, Message } from 'amqplib';
 
-import { EventEmitter } from 'events';
-
 import { log } from './logger';
 
 import { getConnection } from './amqp';
 
-import  Ajv from 'ajv'
-
-const ajv = new Ajv()
 
 const publicIp = require('public-ip');
 
@@ -18,6 +13,8 @@ import * as os from 'os';
 import * as Joi from 'joi';
 
 import * as bsv from 'bsv';
+
+import { BaseActor } from './base_actor'
 
 export class Actor extends EventEmitter {
 
@@ -34,8 +31,6 @@ export class Actor extends EventEmitter {
   hostname: string;
 
   ip: string;
-
-  schema: Joi.Schema;
 
   validateSchema?: any;
 
@@ -109,7 +104,7 @@ export class Actor extends EventEmitter {
 
   constructor(actorParams: ActorConnectionParams) {
 
-    super();
+    super(actorParams);
 
     this.hostname = os.hostname();
 
@@ -130,13 +125,6 @@ export class Actor extends EventEmitter {
     if (!this.privateKey) {
       this.privateKey = new bsv.PrivateKey();
       this.id = this.privateKey.toAddress().toString()
-    }
-
-    if (actorParams.schema) {
-
-      this.schema = actorParams.schema
-      this.validateSchema = ajv.compile(this.schema)
-
     }
 
   }
@@ -179,14 +167,6 @@ export class Actor extends EventEmitter {
     await channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(
       this.toJSON()
     )));
-
-    this.heartbeatInterval = setInterval(async () => {
-
-      await channel.publish('rabbi', 'actor.heartbeat', Buffer.from(JSON.stringify(
-        this.toJSON()
-      )));
-
-    }, this.heartbeatMilliseconds);
 
     channel.consume(this.actorParams.queue, async (msg) => {
 

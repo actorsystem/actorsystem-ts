@@ -1,7 +1,7 @@
 
-import { BaseActor } from '../lib/base_actor'
+import { BaseActor } from '../src/actors/base'
 
-import { App } from '../lib/app'
+import { App } from '../src/app'
 
 import { expect, newIdentity } from './utils'
 
