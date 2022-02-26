@@ -1,10 +1,11 @@
 #!/usr/bin/env ts-node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -17,7 +18,7 @@ const Hapi = require("hapi");
 const actors_1 = require("../lib/actors");
 function start() {
     return __awaiter(this, void 0, void 0, function* () {
-        let channel = yield amqp_1.getChannel();
+        let channel = yield (0, amqp_1.getChannel)();
         channel.assertExchange('rabbi', 'topic');
         let actor = actor_1.Actor.create({
             exchange: 'rabbi',
@@ -27,7 +28,7 @@ function start() {
             .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
             console.log('actor.started', json);
             //log.info(JSON.stringify(json));
-            actors_1.actorStarted(json);
+            (0, actors_1.actorStarted)(json);
             channel.ack(msg);
         }));
         actor_1.Actor.create({
@@ -38,7 +39,7 @@ function start() {
             .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
             console.log('actor.stopped', json);
             //log.info(JSON.stringify(json));
-            actors_1.actorStopped(json);
+            (0, actors_1.actorStopped)(json);
             channel.ack(msg);
         }));
         actor_1.Actor.create({
@@ -49,7 +50,7 @@ function start() {
             .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
             console.log('actor.error', json);
             //log.info(JSON.stringify(json));
-            actors_1.actorError(json);
+            (0, actors_1.actorError)(json);
             channel.ack(msg);
         }));
         actor_1.Actor.create({
@@ -59,7 +60,7 @@ function start() {
         })
             .start((channel, msg, json) => __awaiter(this, void 0, void 0, function* () {
             console.log('actor.heartbeat', json);
-            actors_1.actorHeartbeat(json);
+            (0, actors_1.actorHeartbeat)(json);
             channel.ack(msg);
         }));
         const server = Hapi.server({
@@ -102,8 +103,8 @@ function start() {
             method: 'GET',
             path: '/api/dashboard',
             handler: (request, h) => __awaiter(this, void 0, void 0, function* () {
-                let hosts = yield actors_1.listHosts();
-                let actors = yield actors_1.listActors();
+                let hosts = yield (0, actors_1.listHosts)();
+                let actors = yield (0, actors_1.listActors)();
                 return { hosts, actors };
             }),
             config: {

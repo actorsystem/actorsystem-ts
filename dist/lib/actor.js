@@ -1,13 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Actor = void 0;
 const events_1 = require("events");
 const logger_1 = require("./logger");
 const amqp_1 = require("./amqp");
@@ -57,7 +59,7 @@ class Actor extends events_1.EventEmitter {
                 this.connection = connection;
             }
             else {
-                this.connection = yield amqp_1.getConnection();
+                this.connection = yield (0, amqp_1.getConnection)();
                 logger_1.log.info(`rabbi.amqp.connected`);
             }
             this.channel = yield this.connection.createChannel();
@@ -94,7 +96,6 @@ class Actor extends events_1.EventEmitter {
         return __awaiter(this, void 0, void 0, function* () {
             var json;
             let channel = yield this.connectAmqp(this.actorParams.connection);
-            this.ip = yield publicIp.v4();
             yield channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(this.toJSON())));
             this.heartbeatInterval = setInterval(() => __awaiter(this, void 0, void 0, function* () {
                 yield channel.publish('rabbi', 'actor.heartbeat', Buffer.from(JSON.stringify(this.toJSON())));

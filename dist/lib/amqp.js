@@ -1,13 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getChannel = exports.getConnection = void 0;
 const amqplib_1 = require("amqplib");
 const waitPort = require("wait-port");
 const url = require("url");
@@ -30,7 +32,7 @@ function getConnection() {
                 port: parseInt(parsed.port),
                 output: 'silent'
             });
-            connection = yield amqplib_1.connect(AMQP_URL);
+            connection = yield (0, amqplib_1.connect)(AMQP_URL);
             connecting = false;
             logger_1.log.debug('amqp.amqp.connected');
         }

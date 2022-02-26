@@ -174,8 +174,6 @@ export class Actor extends EventEmitter {
 
     let channel = await this.connectAmqp(this.actorParams.connection);
 
-    this.ip = await publicIp.v4();
-
     await channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(
       this.toJSON()
     )));
