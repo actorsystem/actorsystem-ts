@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.configure = exports.getDirectories = exports.events = exports.store = void 0;
+exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.configure = exports.getDirectories = exports.requireDirectory = exports.events = exports.store = void 0;
 require('dotenv').config();
 const fs = require("fs");
 const path = require("path");
@@ -29,6 +29,8 @@ const Joi = require("joi");
 exports.Joi = Joi;
 const delay = require("delay");
 exports.delay = delay;
+var require_1 = require("./require");
+Object.defineProperty(exports, "requireDirectory", { enumerable: true, get: function () { return require_1.requireDirectory; } });
 function getDirectories(source) {
     return fs.readdirSync(source, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
