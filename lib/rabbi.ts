@@ -21,6 +21,8 @@ import * as Joi from 'joi';
 
 import * as delay from 'delay';
 
+export { requireDirectory } from './require';
+
 export function getDirectories(source) {
   return fs.readdirSync(source, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
