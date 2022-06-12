@@ -1,6 +1,6 @@
 {
   "name": "rabbi",
-  "version": "1.18.2",
+  "version": "1.19.0",
   "description": "Build more reactive services better, faster, with more smiles.",
   "bin": {
     "rabbi": "./dist/bin/rabbi.js"
@@ -83,5 +83,13 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "release": {
+    "branches": ["master"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm"
+    ]
   }
 }
