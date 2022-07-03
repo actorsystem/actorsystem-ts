@@ -1,6 +1,6 @@
 {
   "name": "rabbi",
-  "version": "1.19.1",
+  "version": "1.19.2",
   "description": "Build more reactive services better, faster, with more smiles.",
   "bin": {
     "rabbi": "./dist/bin/rabbi.js"
@@ -9,7 +9,6 @@
   "scripts": {
     "test": "NODE_ENV=test mocha -r ts-node/register test/*_test.ts --timeout=5000 --exit",
     "runtest": "NODE_ENV=test mocha -r ts-node/register $TEST --timeout=5000 --exit",
-    "db:migrate": "sequelize db:migrate --url=$DATABASE_URL",
     "build": "tsc && cp -r templates dist/templates && cp -r models dist/",
     "semantic-release": "semantic-release",
     "commit": "cz"
@@ -64,7 +63,6 @@
     "pg": "^8.7.1",
     "public-ip": "^4.0.0",
     "require-all": "^3.0.0",
-    "sequelize": "^6.12.5",
     "superagent": "^5.0.5",
     "wait-port": "^0.2.2",
     "winston": "^3.2.1"
