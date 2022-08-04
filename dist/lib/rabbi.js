@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.configure = exports.getDirectories = exports.requireDirectory = exports.events = exports.store = void 0;
+exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.publish = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.configure = exports.getDirectories = exports.requireDirectory = exports.events = exports.store = void 0;
 require('dotenv').config();
 const fs = require("fs");
 const path = require("path");
@@ -21,6 +21,7 @@ Object.defineProperty(exports, "log", { enumerable: true, get: function () { ret
 const amqp_1 = require("./amqp");
 Object.defineProperty(exports, "getConnection", { enumerable: true, get: function () { return amqp_1.getConnection; } });
 Object.defineProperty(exports, "getChannel", { enumerable: true, get: function () { return amqp_1.getChannel; } });
+Object.defineProperty(exports, "publish", { enumerable: true, get: function () { return amqp_1.publish; } });
 const store_1 = require("./store");
 Object.defineProperty(exports, "store", { enumerable: true, get: function () { return store_1.store; } });
 var events_1 = require("./events");

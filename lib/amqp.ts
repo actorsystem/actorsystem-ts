@@ -16,6 +16,14 @@ require('dotenv').config();
 
 const AMQP_URL = process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672/';
 
+export async function publish(exchange: string, routingkey: string, message: any) {
+
+  let channel = await getChannel()
+
+  return channel.publish(exchange, routingkey, Buffer.from(JSON.stringify(message)))
+
+}
+
 export async function getConnection() {
 
   while (connecting) {
