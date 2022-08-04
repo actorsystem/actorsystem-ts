@@ -9,7 +9,7 @@ import { Actor } from './actor';
 
 import { log } from './logger';
 
-import { getConnection, getChannel } from './amqp';
+import { getConnection, getChannel, publish } from './amqp';
 
 import { store } from './store'
 
@@ -99,6 +99,7 @@ export {
   log,
   getConnection,
   getChannel,
+  publish,
   delay,
   Joi,
   email,
