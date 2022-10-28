@@ -97,7 +97,7 @@ export class Actor extends EventEmitter {
           this.actorParams.routingkey
         );
 
-        await this.channel.prefetch(3);
+        await this.channel.prefetch(this.actorParams.queueOptions || 1);
 
         resolve(this.channel);
 
@@ -249,7 +249,7 @@ export interface ActorConnectionParams {
 
   schema?: Joi.Schema;
 
-  queueOptions?: object;  
+  queueOptions?: object; 
 
   exchangeType?: string;
 

@@ -1,6 +1,6 @@
 {
   "name": "rabbi",
-  "version": "1.20.2",
+  "version": "1.20.3",
   "description": "Build more reactive services better, faster, with more smiles.",
   "bin": {
     "rabbi": "./dist/bin/rabbi.js"
