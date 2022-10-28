@@ -96,6 +96,7 @@ class Actor extends events_1.EventEmitter {
         return __awaiter(this, void 0, void 0, function* () {
             var json;
             let channel = yield this.connectAmqp(this.actorParams.connection);
+            yield channel.assertExchange('rabbi', 'direct');
             yield channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(this.toJSON())));
             this.heartbeatInterval = setInterval(() => __awaiter(this, void 0, void 0, function* () {
                 yield channel.publish('rabbi', 'actor.heartbeat', Buffer.from(JSON.stringify(this.toJSON())));

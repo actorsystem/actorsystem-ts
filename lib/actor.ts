@@ -174,6 +174,8 @@ export class Actor extends EventEmitter {
 
     let channel = await this.connectAmqp(this.actorParams.connection);
 
+    await channel.assertExchange('rabbi', 'direct')
+
     await channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(
       this.toJSON()
     )));
