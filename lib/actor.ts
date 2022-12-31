@@ -35,7 +35,7 @@ export class Actor extends EventEmitter {
 
   ip: string;
 
-  schema: Joi.Schema;
+  schema?: Joi.Schema;
 
   validateSchema?: any;
 
@@ -132,13 +132,6 @@ export class Actor extends EventEmitter {
       this.id = this.privateKey.toAddress().toString()
     }
 
-    if (actorParams.schema) {
-
-      this.schema = actorParams.schema
-      this.validateSchema = ajv.compile(this.schema)
-
-    }
-
   }
 
   static create(connectionInfo: ActorConnectionParams) {
@@ -198,18 +191,6 @@ export class Actor extends EventEmitter {
 
       }
 
-      if (this.schema) {
-
-        if (!this.validateSchema(json)) {
-
-          log.error('schema.invalid', this.validateSchema.errors);
-
-          return channel.ack(msg);
-  
-        }
-
-      }
-
       if (consumer) {
 
         try {
@@ -220,9 +201,10 @@ export class Actor extends EventEmitter {
 
           console.error('rabbi.exception.caught', error.message);
 
-          await channel.ack(msg); // auto acknowledge
+          // TODO: Send Message to UnhandledExceptions exchange
 
         }
+
 
       } else {
 
@@ -230,6 +212,7 @@ export class Actor extends EventEmitter {
 
       }
 
+      await channel.ack(msg); // auto acknowledge
 
     });
 

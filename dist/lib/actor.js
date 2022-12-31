@@ -37,10 +37,6 @@ class Actor extends events_1.EventEmitter {
             this.privateKey = new bsv.PrivateKey();
             this.id = this.privateKey.toAddress().toString();
         }
-        if (actorParams.schema) {
-            this.schema = actorParams.schema;
-            this.validateSchema = ajv.compile(this.schema);
-        }
     }
     toJSON() {
         return {
@@ -107,24 +103,19 @@ class Actor extends events_1.EventEmitter {
                 }
                 catch (error) {
                 }
-                if (this.schema) {
-                    if (!this.validateSchema(json)) {
-                        logger_1.log.error('schema.invalid', this.validateSchema.errors);
-                        return channel.ack(msg);
-                    }
-                }
                 if (consumer) {
                     try {
                         let result = yield consumer(channel, msg, json);
                     }
                     catch (error) {
                         console.error('rabbi.exception.caught', error.message);
-                        yield channel.ack(msg); // auto acknowledge
+                        // TODO: Send Message to UnhandledExceptions exchange
                     }
                 }
                 else {
                     this.defaultConsumer(channel, msg, json);
                 }
+                yield channel.ack(msg); // auto acknowledge
             }));
         });
     }
