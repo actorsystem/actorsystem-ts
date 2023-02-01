@@ -1,25 +1,59 @@
 
 # Rabbi
 
-Microservices Controller for RabbitMQ
+Build Better Typescript Services Faster With More Smiles
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-```
 ## Installation
 
 Typescript and `ts-node` are required in your PATH to run rabbi apps. 
 
 ```
 npm install -g rabbi
-
 ```
 
-## Basic Usage
+
+
+###### Publishing Messages
+
+First install rabbi into your typescript app:
+
+```
+npm install --save rabbi
+```
+
+Once connected to the amqp server cluster any application component may publish messages the exchange with a routing key and a json object
+
+```
+import { publish } from 'rabbi'
+
+const exchange = 'midasvalley'
+
+const routingkey = 'lease.created'
+
+const json = {
+  lessor: 'Dan',
+  lessee: 'Jan',
+  term: {
+    period: 'month',
+    number: 12
+  },
+  price: {
+    currency: 'XBT',
+    value: 1
+  }
+}
+
+await publish(exchange, routingkey, json)
+
+```
+The above json will be automatically serialzed into a binary buffer and published to all listeners within the `midasvalley` exchange interested in the topic `lease.created`. These values are simply demo values.
+
+## Basic Actors Usage
 
 Rabbi uses a directory and file naming convention to speed up writing and
 deploying new apps based on the reactive messaging and actor model.
-
 
 ### Command Line
 
