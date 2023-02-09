@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Actor = void 0;
+const uuid = require("uuid");
 const events_1 = require("events");
 const logger_1 = require("./logger");
 const amqp_1 = require("./amqp");
@@ -22,6 +23,7 @@ class Actor extends events_1.EventEmitter {
     constructor(actorParams) {
         super();
         this.heartbeatMilliseconds = 10000; // Timeout from setInterval
+        this.consumerTag = uuid.v4();
         this.hostname = os.hostname();
         this.actorParams = actorParams;
         if (!actorParams.queue) {
@@ -83,6 +85,7 @@ class Actor extends events_1.EventEmitter {
     }
     stop() {
         return __awaiter(this, void 0, void 0, function* () {
+            this.channel.cancel(this.consumerTag);
             if (this.heartbeatInterval) {
                 clearInterval(this.heartbeatInterval);
             }
@@ -116,7 +119,9 @@ class Actor extends events_1.EventEmitter {
                     this.defaultConsumer(channel, msg, json);
                 }
                 yield channel.ack(msg); // auto acknowledge
-            }));
+            }), {
+                consumerTag: this.consumerTag
+            });
         });
     }
 }

@@ -1,6 +1,8 @@
 
 import { connect, Connection, Channel, Message } from 'amqplib';
 
+import * as uuid from 'uuid'
+
 import { EventEmitter } from 'events';
 
 import { log } from './logger';
@@ -28,6 +30,8 @@ export class Actor extends EventEmitter {
   actorParams: ActorConnectionParams;
   
   privateKey: bsv.PrivateKey;
+
+  consumerTag?: string;
 
   id: string;
 
@@ -111,6 +115,8 @@ export class Actor extends EventEmitter {
 
     super();
 
+    this.consumerTag = uuid.v4();
+
     this.hostname = os.hostname();
 
     this.actorParams = actorParams;
@@ -152,6 +158,8 @@ export class Actor extends EventEmitter {
   }
 
   async stop() {
+
+    this.channel.cancel(this.consumerTag)
 
     if (this.heartbeatInterval) {
 
@@ -213,6 +221,10 @@ export class Actor extends EventEmitter {
       }
 
       await channel.ack(msg); // auto acknowledge
+
+    }, {
+
+      consumerTag: this.consumerTag
 
     });
 

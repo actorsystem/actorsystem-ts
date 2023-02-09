@@ -4,17 +4,15 @@ require('dotenv').config();
 
 import { Actor, Joi, log } from 'rabbi';
 
-export async function start() {
+export default async function start() {
 
   Actor.create({
 
-    exchange: '',
+    exchange: 'rabbi',
 
     routingkey: '',
 
     queue: '',
-
-    schema: Joi.object() // optional, enforces validity of json schema: see json schema documentation https://ajv.js.org/json-type-definition.html
 
   })
   .start(async (channel, msg, json) => {
@@ -34,4 +32,3 @@ if (require.main === module) {
   start();
 
 }
-
