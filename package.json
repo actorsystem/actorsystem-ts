@@ -63,7 +63,7 @@
     "moment": "^2.24.0",
     "node-fetch": "^2.6.6",
     "pg": "^8.7.1",
-    "public-ip": "^4.0.0",
+    "public-ip": "^6.0.1",
     "require-all": "^3.0.0",
     "split2": "^4.1.0",
     "superagent": "^5.0.5",
