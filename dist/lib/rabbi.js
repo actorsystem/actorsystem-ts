@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.publish = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.configure = exports.getDirectories = exports.requireDirectory = exports.events = exports.store = void 0;
+exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.publish = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.getDirectories = exports.requireDirectory = exports.events = void 0;
 require('dotenv').config();
 const fs = require("fs");
 const path = require("path");
@@ -22,8 +22,6 @@ const amqp_1 = require("./amqp");
 Object.defineProperty(exports, "getConnection", { enumerable: true, get: function () { return amqp_1.getConnection; } });
 Object.defineProperty(exports, "getChannel", { enumerable: true, get: function () { return amqp_1.getChannel; } });
 Object.defineProperty(exports, "publish", { enumerable: true, get: function () { return amqp_1.publish; } });
-const store_1 = require("./store");
-Object.defineProperty(exports, "store", { enumerable: true, get: function () { return store_1.store; } });
 var events_1 = require("./events");
 Object.defineProperty(exports, "events", { enumerable: true, get: function () { return events_1.events; } });
 const Joi = require("joi");
@@ -38,14 +36,6 @@ function getDirectories(source) {
         .map(dirent => dirent.name);
 }
 exports.getDirectories = getDirectories;
-function configure(config) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (config.store) {
-            store_1.store.configureStore(config.store);
-        }
-    });
-}
-exports.configure = configure;
 function startActors(actorNames = []) {
     actorNames.map(actorName => {
         return require(path.join(process.cwd(), 'actors', actorName, 'actor.ts'));

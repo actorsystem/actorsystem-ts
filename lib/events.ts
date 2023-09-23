@@ -3,13 +3,9 @@ import { EventEmitter } from 'events'
 
 const EventEmitter2 = require('eventemitter2')
 
-import { store, EventStore } from './store'
-
 import { getChannel } from './amqp'
 
 class Events {
-
-  store: EventStore;
 
   exchange: string = 'rabbi.events';
 
@@ -23,7 +19,6 @@ class Events {
 
     this.init()
 
-    this.store = store;
   }
 
   on(event: string, callback) {
@@ -47,12 +42,6 @@ class Events {
     channel.publish(this.exchange, event, Buffer.from(
       JSON.stringify(payload)
     ));
-
-    if (this.store.isAvailable) {
-
-      return this.store.storeEvent(event, payload)
-
-    }
 
   }
 

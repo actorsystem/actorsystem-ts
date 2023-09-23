@@ -53,21 +53,26 @@ class Actor extends events_1.EventEmitter {
     }
     connectAmqp(connection) {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-            if (connection) {
-                this.connection = connection;
+            if (this.actorParams.connection) {
+                this.connection = this.actorParams.connection;
             }
             else {
                 this.connection = yield (0, amqp_1.getConnection)();
                 logger_1.log.info(`rabbi.amqp.connected`);
             }
-            this.channel = yield this.connection.createChannel();
+            if (this.actorParams.channel) {
+                this.channel = this.actorParams.channel;
+            }
+            else {
+                this.channel = yield this.connection.createChannel();
+            }
             logger_1.log.info('rabbi.amqp.channel.created');
             //this.channel.checkExchange(this.actorParams.exchange, async (err) => {
             yield this.channel.assertExchange(this.actorParams.exchange, this.actorParams.exchangeType);
             yield this.channel.assertQueue(this.actorParams.queue, this.actorParams.queueOptions);
             logger_1.log.info('rabbi.amqp.binding.created', this.toJSON());
             yield this.channel.bindQueue(this.actorParams.queue, this.actorParams.exchange, this.actorParams.routingkey);
-            yield this.channel.prefetch(this.actorParams.queueOptions || 1);
+            yield this.channel.prefetch(this.actorParams.prefetch || 1);
             resolve(this.channel);
             //})
         }));

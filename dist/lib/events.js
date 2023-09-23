@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.events = void 0;
 const EventEmitter2 = require('eventemitter2');
-const store_1 = require("./store");
 const amqp_1 = require("./amqp");
 class Events {
     constructor() {
@@ -20,7 +19,6 @@ class Events {
             wildcard: true
         });
         this.init();
-        this.store = store_1.store;
     }
     on(event, callback) {
         this.emitter.on(event, callback);
@@ -36,9 +34,6 @@ class Events {
             this.emitter.emit(event, payload);
             let channel = yield (0, amqp_1.getChannel)();
             channel.publish(this.exchange, event, Buffer.from(JSON.stringify(payload)));
-            if (this.store.isAvailable) {
-                return this.store.storeEvent(event, payload);
-            }
         });
     }
 }

@@ -11,10 +11,6 @@ import { log } from './logger';
 
 import { getConnection, getChannel, publish } from './amqp';
 
-import { store } from './store'
-
-export { store }
-
 export { events } from './events'
 
 import * as Joi from 'joi';
@@ -30,17 +26,7 @@ export function getDirectories(source) {
 }
 
 interface Configuration {
-  store?: any;
   amqp?: string;
-}
-
-export async function configure(config: Configuration) {
-
-  if (config.store) {
-
-    store.configureStore(config.store)
-  }
-
 }
 
 export function startActors(actorNames=[]) {

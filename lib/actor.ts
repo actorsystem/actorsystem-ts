@@ -23,9 +23,9 @@ import * as bsv from 'bsv';
 
 export class Actor extends EventEmitter {
 
-  connection?: any;
+  connection?: Connection | null;
 
-  channel?: any;
+  channel?: Channel | null;
 
   actorParams: ActorConnectionParams;
   
@@ -72,9 +72,9 @@ export class Actor extends EventEmitter {
   connectAmqp(connection?: any): Promise<any> {
     return new Promise(async (resolve, reject) => {
 
-      if (connection) {
+      if (this.actorParams.connection) {
 
-        this.connection = connection;
+        this.connection = this.actorParams.connection;
 
       } else {
 
@@ -83,7 +83,15 @@ export class Actor extends EventEmitter {
         log.info(`rabbi.amqp.connected`);
       }
 
-      this.channel = await this.connection.createChannel();
+      if (this.actorParams.channel) {
+
+        this.channel = this.actorParams.channel
+
+      } else {
+
+        this.channel = await this.connection.createChannel();
+
+      }
 
       log.info('rabbi.amqp.channel.created');
 
@@ -101,7 +109,7 @@ export class Actor extends EventEmitter {
           this.actorParams.routingkey
         );
 
-        await this.channel.prefetch(this.actorParams.queueOptions || 1);
+        await this.channel.prefetch(this.actorParams.prefetch || 1);
 
         resolve(this.channel);
 
@@ -241,6 +249,10 @@ export interface ActorConnectionParams {
   queue: string;
 
   connection?: Connection;
+
+  channel?: Channel;
+
+  prefetch?: number;
 
   schema?: Joi.Schema;
 
