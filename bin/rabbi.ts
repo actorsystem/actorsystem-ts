@@ -14,67 +14,6 @@ const mkdirp = require('mkdirp')
 
 var cp = require('cp-file');
 
-import { sendEmail } from '../lib/email';
-
-program
-  .command('email <create> <name>')
-  .option('-d, --destination [destination]', 'destination email address')
-  .option('-f, --from [from]', 'from email address')
-  .option('-t, --template [template]', 'template to use')
-  .option('-v, --variables [from]', 'from email address')
-  .action(async (command, name, args) => {
-    var variables;
-
-    if (args.v) {
-      variables = JSON.parse(args.v); 
-    }
-
-    switch (command) {
-    case 'send':
-
-      let resp = await sendEmail(name, args.destination, args.from, variables);
-
-      console.log(resp);
-
-      process.exit(0);
-
-    default:
-
-      break;
-    }
-
-    if (command !== 'create') {
-      process.exit(0);
-    }
-
-    // check for directory, fail if already exists
-    let directory = path.join(process.cwd(), 'emails', name);
-
-    if (existsSync(directory)) {
-      console.log(`rabbi> directory emails/${name} already exists`);
-      process.exit(0);
-    }
-
-    mkdirp.sync(directory);
-
-    let template = args.template || 'default';
-
-    let emailDirectory = path.join(__dirname, '..', 'email');
-    let templatesDirectory = path.join(emailDirectory, 'templates');
-
-    cpFile.sync(
-      path.join(templatesDirectory, `${template}.html`),
-      path.join(directory, 'email.html')
-    );
-
-    cpFile.sync(
-      path.join(emailDirectory, `index.js`),
-      path.join(directory, 'index.js')
-    );
-
-    console.log(`rabbi> new email created at ${directory}`);
-
-  });
 
 program
   .command('start')

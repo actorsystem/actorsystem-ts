@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/stevenzeiler/rabbi.git"
+    "url": "https://github.com/actorsystem/actorsystem-ts.git"
   },
   "keywords": [
     "microservices",
@@ -44,7 +44,6 @@
     "ajv": "^8.9.0",
     "amqplib": "^0.8.0",
     "async-redis": "^1.1.7",
-    "aws-sdk": "^2.635.0",
     "bsv": "^1.2.0",
     "callsite": "^1.0.0",
     "cp-file": "^7.0.0",

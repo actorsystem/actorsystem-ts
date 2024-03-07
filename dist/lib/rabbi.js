@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.startActorsDirectory = exports.requireHandlersDirectory = exports.email = exports.Joi = exports.delay = exports.publish = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.getDirectories = exports.requireDirectory = exports.events = void 0;
+exports.startActorsDirectory = exports.requireHandlersDirectory = exports.Joi = exports.delay = exports.publish = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.getDirectories = exports.requireDirectory = exports.events = void 0;
 require('dotenv').config();
 const fs = require("fs");
 const path = require("path");
@@ -67,8 +67,6 @@ function requireHandlersDirectory(dirname) {
     return handlers;
 }
 exports.requireHandlersDirectory = requireHandlersDirectory;
-const email = require("./email");
-exports.email = email;
 function jToB(json) {
     return Buffer.from(JSON.stringify(json));
 }

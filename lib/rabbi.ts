@@ -72,8 +72,6 @@ function requireHandlersDirectory(dirname) {
   return handlers;
 }
 
-import * as email from './email';
-
 export function jToB(json): Buffer {
 
   return Buffer.from(JSON.stringify(json))
@@ -88,7 +86,6 @@ export {
   publish,
   delay,
   Joi,
-  email,
   requireHandlersDirectory
 }
 
