@@ -1,16 +1,13 @@
 {
   "name": "rabbi",
-  "version": "1.24.2",
+  "version": "1.24.3",
 
   "description": "Build more reactive services better, faster, with more smiles.",
-  "bin": {
-    "rabbi": "./dist/bin/rabbi.js"
-  },
   "files": [
     "dist/"
   ],
-  "main": "./dist/lib/rabbi.js",
-  "types": "./dist/lib/rabbi.d.ts",
+  "main": "./dist/rabbi.js",
+  "types": "./dist/rabbi.d.ts",
   "scripts": {
     "test": "NODE_ENV=test mocha -r ts-node/register test/*_test.ts --timeout=5000 --exit",
     "runtest": "NODE_ENV=test mocha -r ts-node/register $TEST --timeout=5000 --exit",
