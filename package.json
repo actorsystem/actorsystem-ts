@@ -1,15 +1,20 @@
 {
   "name": "rabbi",
-  "version": "1.24.1",
+  "version": "1.24.2",
+
   "description": "Build more reactive services better, faster, with more smiles.",
   "bin": {
     "rabbi": "./dist/bin/rabbi.js"
   },
+  "files": [
+    "dist/"
+  ],
   "main": "./dist/lib/rabbi.js",
+  "types": "./dist/lib/rabbi.d.ts",
   "scripts": {
     "test": "NODE_ENV=test mocha -r ts-node/register test/*_test.ts --timeout=5000 --exit",
     "runtest": "NODE_ENV=test mocha -r ts-node/register $TEST --timeout=5000 --exit",
-    "build": "tsc && cp -r templates dist/templates",
+    "build": "tsc",
     "semantic-release": "semantic-release",
     "commit": "cz"
   },
@@ -39,7 +44,6 @@
     "@types/amqplib": "^0.8.2",
     "@types/bluebird": "^3.5.26",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.26",
     "@types/winston": "^2.4.4",
     "ajv": "^8.9.0",
     "amqplib": "^0.8.0",
@@ -60,7 +64,6 @@
     "mkdirp": "^0.5.1",
     "mocha": "^6.2.0",
     "moment": "^2.24.0",
-    "node-fetch": "^2.6.6",
     "pg": "^8.7.1",
     "public-ip": "^4.0.0",
     "require-all": "^3.0.0",
@@ -71,6 +74,10 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@types/hapi__joi": "^17.1.14",
+    "@types/lodash": "^4.17.0",
+    "@types/node": "^20.11.28",
+    "@types/uuid": "^9.0.8",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "chance": "^1.1.8",

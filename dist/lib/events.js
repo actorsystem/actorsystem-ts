@@ -14,7 +14,7 @@ const EventEmitter2 = require('eventemitter2');
 const amqp_1 = require("./amqp");
 class Events {
     constructor() {
-        this.exchange = 'rabbi.events';
+        this.exchange = 'default';
         this.emitter = new EventEmitter2({
             wildcard: true
         });

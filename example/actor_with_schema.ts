@@ -1,5 +1,5 @@
 
-import { Actor, log, Joi } from '../lib/rabbi';
+import { Actor, log, Joi } from '../src/lib/rabbi';
 
 import * as amqp from 'amqplib';
 

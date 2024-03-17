@@ -1,5 +1,4 @@
 
-import { EventEmitter } from 'events'
 
 const EventEmitter2 = require('eventemitter2')
 
@@ -7,7 +6,7 @@ import { getChannel } from './amqp'
 
 class Events {
 
-  exchange: string = 'rabbi.events';
+  exchange: string = 'default';
 
   emitter: any;
 
@@ -21,7 +20,7 @@ class Events {
 
   }
 
-  on(event: string, callback) {
+  on(event: string, callback: Function) {
 
     this.emitter.on(event, callback)
   }

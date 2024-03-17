@@ -1,5 +1,5 @@
 
-import { connect, Connection, Channel, Message } from 'amqplib';
+import { Connection, Channel, Message } from 'amqplib';
 
 import * as uuid from 'uuid'
 
@@ -9,17 +9,51 @@ import { log } from './logger';
 
 import { getConnection } from './amqp';
 
-import  Ajv from 'ajv'
+import * as Joi from '@hapi/joi';
 
-const ajv = new Ajv()
+interface ActorAsJson {
+  exchange: string;
 
-const publicIp = require('public-ip');
+  routingkey: string;
+  queue: string;
+  queueOptions: {
 
-import * as os from 'os';
+  }
+}
 
-import * as Joi from 'joi';
+const defaultExchange = 'default'
+const defaultExchangeType = 'direct'
 
-import * as bsv from 'bsv';
+interface CreateNewActorParams {
+  routingkey: string;
+
+  queue?: string;
+
+  exchange?: string;
+
+  connection?: Connection;
+
+  channel?: Channel;
+
+  prefetch?: number;
+
+  schema?: Joi.Schema;
+
+  queueOptions?: object; 
+
+  exchangeType?: string;
+}
+
+export interface ActorConnectionParams extends CreateNewActorParams {
+
+  exchange: string;
+
+  queue: string;
+
+  exchangeType: string;
+
+}
+
 
 export class Actor extends EventEmitter {
 
@@ -29,15 +63,7 @@ export class Actor extends EventEmitter {
 
   actorParams: ActorConnectionParams;
   
-  privateKey: bsv.PrivateKey;
-
   consumerTag?: string;
-
-  id: string;
-
-  hostname: string;
-
-  ip: string;
 
   schema?: Joi.Schema;
 
@@ -47,7 +73,7 @@ export class Actor extends EventEmitter {
 
   heartbeatInterval: any; // Timeout from setInterval
 
-  toJSON(): any {
+  toJSON(): ActorAsJson {
 
     return {
 
@@ -57,13 +83,7 @@ export class Actor extends EventEmitter {
 
       queue: this.actorParams.queue,
 
-      queueOptions: this.actorParams.queueOptions,
-
-      id: this.privateKey.toAddress().toString(),
-
-      hostname: this.hostname,
-
-      ip: this.ip
+      queueOptions: this.actorParams.queueOptions || {},
 
     };
 
@@ -119,36 +139,39 @@ export class Actor extends EventEmitter {
 
   }
 
-  constructor(actorParams: ActorConnectionParams) {
+  constructor(params: CreateNewActorParams) {
 
     super();
 
-    this.consumerTag = uuid.v4();
+    const actorParams: ActorConnectionParams = Object.assign({
+      exchange: 'default',
+      queue: params.routingkey,
+      exchangeType: 'direct'
+    }, params);
 
-    this.hostname = os.hostname();
-
-    this.actorParams = actorParams;
-
-    if (!actorParams.queue) {
-      this.actorParams.queue = actorParams.routingkey;
+    if (!params.exchange) {
+      actorParams.exchange = 'default';
     }
 
+    if (!actorParams.queue) {
+      actorParams.queue = actorParams.routingkey
+    }
+
+    this.consumerTag = uuid.v4();
+
     if (!actorParams.exchangeType) {
-      this.actorParams.exchangeType = 'direct';
+      actorParams.exchangeType = 'direct';
     }
 
     if (!actorParams.routingkey) {
-      this.actorParams.routingkey = actorParams.queue;
+      actorParams.routingkey = actorParams.queue;
     }
 
-    if (!this.privateKey) {
-      this.privateKey = new bsv.PrivateKey();
-      this.id = this.privateKey.toAddress().toString()
-    }
+    this.actorParams = actorParams
 
   }
 
-  static create(connectionInfo: ActorConnectionParams) {
+  static create(connectionInfo: CreateNewActorParams) {
 
     let actor = new Actor(connectionInfo);
 
@@ -157,9 +180,7 @@ export class Actor extends EventEmitter {
 
   async defaultConsumer(channel: Channel, msg: Message, json?: any) {
 
-    let message = this.toJSON();
-
-    message.message = msg.content.toString();
+    const message = msg.content.toString();
 
     log.info(message);
 
@@ -167,23 +188,20 @@ export class Actor extends EventEmitter {
 
   async stop() {
 
-    this.channel.cancel(this.consumerTag)
+    if (this.channel && this.consumerTag) {
 
-    if (this.heartbeatInterval) {
-
-      clearInterval(this.heartbeatInterval);
-
+      this.channel.cancel(this.consumerTag)
     }
     
   }
 
-  async start(consumer?: (channel: any, msg: any, json?: any) => Promise<void>) {
+  async start<T>(consumer?: (channel: any, msg: any, json?: any) => Promise<void>) {
 
-    var json;
+    var json: T;
 
     let channel = await this.connectAmqp(this.actorParams.connection);
 
-    await channel.assertExchange('rabbi', 'direct')
+    await channel.assertExchange(this.actorParams.exchange, this.actorParams.exchangeType)
 
     await channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(
       this.toJSON()
@@ -197,7 +215,7 @@ export class Actor extends EventEmitter {
 
     }, this.heartbeatMilliseconds);
 
-    channel.consume(this.actorParams.queue, async (msg) => {
+    channel.consume(this.actorParams.queue, async (msg: Message) => {
 
       try {
 
@@ -213,7 +231,7 @@ export class Actor extends EventEmitter {
 
           let result = await consumer(channel, msg, json);
 
-        } catch(error) {
+        } catch(error: any) {
 
           console.error('rabbi.exception.caught', error.message);
 
@@ -240,25 +258,5 @@ export class Actor extends EventEmitter {
 
 }
 
-export interface ActorConnectionParams {
 
-  exchange: string;
-
-  routingkey: string;
-
-  queue: string;
-
-  connection?: Connection;
-
-  channel?: Channel;
-
-  prefetch?: number;
-
-  schema?: Joi.Schema;
-
-  queueOptions?: object; 
-
-  exchangeType?: string;
-
-}
 

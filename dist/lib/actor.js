@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -10,45 +29,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Actor = void 0;
-const uuid = require("uuid");
+const uuid = __importStar(require("uuid"));
 const events_1 = require("events");
 const logger_1 = require("./logger");
 const amqp_1 = require("./amqp");
-const ajv_1 = require("ajv");
-const ajv = new ajv_1.default();
-const publicIp = require('public-ip');
-const os = require("os");
-const bsv = require("bsv");
 class Actor extends events_1.EventEmitter {
-    constructor(actorParams) {
+    constructor(params) {
         super();
         this.heartbeatMilliseconds = 10000; // Timeout from setInterval
-        this.consumerTag = uuid.v4();
-        this.hostname = os.hostname();
-        this.actorParams = actorParams;
-        if (!actorParams.queue) {
-            this.actorParams.queue = actorParams.routingkey;
+        const actorParams = Object.assign({
+            exchange: amqp_1.defaultExchange,
+            queue: params.routingkey,
+            exchangeType: amqp_1.defaultExchangeType
+        }, params);
+        if (!params.exchange) {
+            actorParams.exchange = amqp_1.defaultExchange;
         }
+        if (!actorParams.queue) {
+            actorParams.queue = actorParams.routingkey;
+        }
+        this.consumerTag = uuid.v4();
         if (!actorParams.exchangeType) {
-            this.actorParams.exchangeType = 'direct';
+            actorParams.exchangeType = amqp_1.defaultExchangeType;
         }
         if (!actorParams.routingkey) {
-            this.actorParams.routingkey = actorParams.queue;
+            actorParams.routingkey = actorParams.queue;
         }
-        if (!this.privateKey) {
-            this.privateKey = new bsv.PrivateKey();
-            this.id = this.privateKey.toAddress().toString();
-        }
+        this.actorParams = actorParams;
     }
     toJSON() {
         return {
             exchange: this.actorParams.exchange,
             routingkey: this.actorParams.routingkey,
             queue: this.actorParams.queue,
-            queueOptions: this.actorParams.queueOptions,
-            id: this.privateKey.toAddress().toString(),
-            hostname: this.hostname,
-            ip: this.ip
+            queueOptions: this.actorParams.queueOptions || {},
         };
     }
     connectAmqp(connection) {
@@ -83,16 +97,14 @@ class Actor extends events_1.EventEmitter {
     }
     defaultConsumer(channel, msg, json) {
         return __awaiter(this, void 0, void 0, function* () {
-            let message = this.toJSON();
-            message.message = msg.content.toString();
+            const message = msg.content.toString();
             logger_1.log.info(message);
         });
     }
     stop() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.channel.cancel(this.consumerTag);
-            if (this.heartbeatInterval) {
-                clearInterval(this.heartbeatInterval);
+            if (this.channel && this.consumerTag) {
+                this.channel.cancel(this.consumerTag);
             }
         });
     }
@@ -100,7 +112,7 @@ class Actor extends events_1.EventEmitter {
         return __awaiter(this, void 0, void 0, function* () {
             var json;
             let channel = yield this.connectAmqp(this.actorParams.connection);
-            yield channel.assertExchange('rabbi', 'direct');
+            yield channel.assertExchange(this.actorParams.exchange, this.actorParams.exchangeType);
             yield channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(this.toJSON())));
             this.heartbeatInterval = setInterval(() => __awaiter(this, void 0, void 0, function* () {
                 yield channel.publish('rabbi', 'actor.heartbeat', Buffer.from(JSON.stringify(this.toJSON())));
