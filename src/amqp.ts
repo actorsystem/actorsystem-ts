@@ -16,9 +16,31 @@ require('dotenv').config();
 
 const AMQP_URL: string = process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672/';
 
-export async function publish(exchange: string, routingkey: string, message: any) {
+const defaultExchange = process.env.AMQP_EXCHANGE || 'default';
+
+export function publish(routingkey: string, message: Object): Promise<boolean>;
+export function publish(exchange: string, routingkey: string, message: Object): Promise<boolean>;
+
+export async function publish(a: string, b: string | Object, c?: Object | undefined): Promise<boolean> {
 
   let channel = await getChannel()
+
+  var exchange, routingkey: string;
+  var message: Object;
+
+  if (c) {
+
+    exchange = a;
+    routingkey = b as string;
+    message = c;
+
+  } else {
+
+    exchange = defaultExchange;
+    routingkey = a;
+    message = b;
+
+  }
 
   return channel.publish(exchange, routingkey, Buffer.from(JSON.stringify(message)))
 
