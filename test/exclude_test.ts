@@ -1,8 +1,8 @@
 import * as path from 'path';
 
-import * as assert from 'assert';
+import assert from 'assert';
 
-import { startActorsDirectory } from '../lib/rabbi';
+import { startActorsDirectory } from '../src/rabbi';
 
 describe("Excluding actors from an actors directory", () => {
 

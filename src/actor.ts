@@ -171,7 +171,7 @@ export class Actor extends EventEmitter {
 
   }
 
-  static create(connectionInfo: ActorConnectionParams) {
+  static create(connectionInfo: CreateNewActorParams) {
 
     let actor = new Actor(connectionInfo);
 
