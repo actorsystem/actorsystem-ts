@@ -24,7 +24,7 @@ Object.defineProperty(exports, "getChannel", { enumerable: true, get: function (
 Object.defineProperty(exports, "publish", { enumerable: true, get: function () { return amqp_1.publish; } });
 var events_1 = require("./events");
 Object.defineProperty(exports, "events", { enumerable: true, get: function () { return events_1.events; } });
-const Joi = require("joi");
+const Joi = require("@hapi/joi");
 exports.Joi = Joi;
 const delay = require("delay");
 exports.delay = delay;
@@ -94,7 +94,7 @@ function startActorsDirectory(directoryIndexPath, opts = {
             }, tmpHandle);
         });
         actors = (0, lodash_1.reject)(actors, a => !a);
-        let shouldExclude = buildShouldExclude(opts.exclude);
+        let shouldExclude = buildShouldExclude(opts.exclude || []);
         actors = (0, lodash_1.reject)(actors, actor => shouldExclude(actor.name));
         if (opts.include && opts.include.length > 0) {
             let included = buildIncluded(opts.include);
@@ -106,7 +106,7 @@ function startActorsDirectory(directoryIndexPath, opts = {
 }
 exports.startActorsDirectory = startActorsDirectory;
 function buildShouldExclude(excludeOpts) {
-    let exclusions = (0, lodash_1.reduce)(excludeOpts, (exclusions, actorName) => {
+    const exclusions = (0, lodash_1.reduce)(excludeOpts, (exclusions, actorName) => {
         exclusions[actorName] = true;
         return exclusions;
     }, {});

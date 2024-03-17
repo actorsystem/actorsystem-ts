@@ -5,13 +5,13 @@ import { join } from 'path'
 
 const stack = require('callsite');
 
-function capitalizeFirstLetter(string) {
+function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 function getCallerDirectory(): string {
 
-  let site = stack().filter(function(site){
+  let site = stack().filter(function(site: { getFunctionName: () => any; }){
     return !site.getFunctionName()
   })[0]
 
@@ -55,7 +55,7 @@ export function requireDirectory(dirname: string, options: Options={}): Director
 
   const filter = options.filter || /(.+)\.ts$/;
 
-  const map = options.map || function(name, path) {
+  const map = options.map || function(name: string, path: string) {
 
     return name.split('_').map(p => {
 

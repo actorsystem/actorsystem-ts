@@ -14,41 +14,38 @@ const uuid = require("uuid");
 const events_1 = require("events");
 const logger_1 = require("./logger");
 const amqp_1 = require("./amqp");
-const ajv_1 = require("ajv");
-const ajv = new ajv_1.default();
-const publicIp = require('public-ip');
-const os = require("os");
-const bsv = require("bsv");
+const defaultExchange = 'default';
+const defaultExchangeType = 'direct';
 class Actor extends events_1.EventEmitter {
-    constructor(actorParams) {
+    constructor(params) {
         super();
         this.heartbeatMilliseconds = 10000; // Timeout from setInterval
-        this.consumerTag = uuid.v4();
-        this.hostname = os.hostname();
-        this.actorParams = actorParams;
-        if (!actorParams.queue) {
-            this.actorParams.queue = actorParams.routingkey;
+        const actorParams = Object.assign({
+            exchange: 'default',
+            queue: params.routingkey,
+            exchangeType: 'direct'
+        }, params);
+        if (!params.exchange) {
+            actorParams.exchange = 'default';
         }
+        if (!actorParams.queue) {
+            actorParams.queue = actorParams.routingkey;
+        }
+        this.consumerTag = uuid.v4();
         if (!actorParams.exchangeType) {
-            this.actorParams.exchangeType = 'direct';
+            actorParams.exchangeType = 'direct';
         }
         if (!actorParams.routingkey) {
-            this.actorParams.routingkey = actorParams.queue;
+            actorParams.routingkey = actorParams.queue;
         }
-        if (!this.privateKey) {
-            this.privateKey = new bsv.PrivateKey();
-            this.id = this.privateKey.toAddress().toString();
-        }
+        this.actorParams = actorParams;
     }
     toJSON() {
         return {
             exchange: this.actorParams.exchange,
             routingkey: this.actorParams.routingkey,
             queue: this.actorParams.queue,
-            queueOptions: this.actorParams.queueOptions,
-            id: this.privateKey.toAddress().toString(),
-            hostname: this.hostname,
-            ip: this.ip
+            queueOptions: this.actorParams.queueOptions || {},
         };
     }
     connectAmqp(connection) {
@@ -83,16 +80,14 @@ class Actor extends events_1.EventEmitter {
     }
     defaultConsumer(channel, msg, json) {
         return __awaiter(this, void 0, void 0, function* () {
-            let message = this.toJSON();
-            message.message = msg.content.toString();
+            const message = msg.content.toString();
             logger_1.log.info(message);
         });
     }
     stop() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.channel.cancel(this.consumerTag);
-            if (this.heartbeatInterval) {
-                clearInterval(this.heartbeatInterval);
+            if (this.channel && this.consumerTag) {
+                this.channel.cancel(this.consumerTag);
             }
         });
     }
@@ -100,7 +95,7 @@ class Actor extends events_1.EventEmitter {
         return __awaiter(this, void 0, void 0, function* () {
             var json;
             let channel = yield this.connectAmqp(this.actorParams.connection);
-            yield channel.assertExchange('rabbi', 'direct');
+            yield channel.assertExchange(this.actorParams.exchange, this.actorParams.exchangeType);
             yield channel.publish('rabbi', 'actor.started', Buffer.from(JSON.stringify(this.toJSON())));
             this.heartbeatInterval = setInterval(() => __awaiter(this, void 0, void 0, function* () {
                 yield channel.publish('rabbi', 'actor.heartbeat', Buffer.from(JSON.stringify(this.toJSON())));

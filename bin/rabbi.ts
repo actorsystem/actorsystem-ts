@@ -20,7 +20,7 @@ program
   .option('-a, --actors [actors]', 'List of actors to run')
   .option('-e, --exclude [exclude]', 'List of actors to exclude')
   .option('-d, --directory [directory]', 'Path to directory')
-  .action(async (args) => {
+  .action(async (args: { directory: string; exclude: string; }) => {
 
     var directory;
 
@@ -42,7 +42,7 @@ program
   
     }
 
-    var exclude = [];
+    var exclude: string[] = [];
 
     if (args.exclude) {
 
@@ -59,7 +59,7 @@ program
   .option('-e, --exchange [exchange]', 'AMQP exchange')
   .option('-r, --routingkey [routingkey]', 'AMQP routing key')
   .option('-q, --queue [queue]', 'AMQP queue')
-  .action(async (actorName, args) => {
+  .action(async (actorName: any, args: any) => {
 
     let p = path.join(process.cwd(), 'actors', actorName);
 

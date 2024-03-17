@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getChannel = exports.getConnection = exports.publish = void 0;
 const amqplib_1 = require("amqplib");
-const waitPort = require("wait-port");
+const waitPort = require('wait-port');
 const url = require("url");
 const logger_1 = require("./logger");
 var connection;
@@ -36,7 +36,7 @@ function getConnection() {
             let parsed = url.parse(AMQP_URL);
             yield waitPort({
                 host: parsed.hostname,
-                port: parseInt(parsed.port),
+                port: parseInt(String(parsed.port)),
                 output: 'silent'
             });
             connection = yield (0, amqplib_1.connect)(AMQP_URL);

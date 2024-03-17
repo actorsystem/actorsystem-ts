@@ -4,11 +4,14 @@
     "lib": [
       "es6", "ES2015", "ES2016", "ES2017"
     ],
-    "allowJs": true,
+    "allowJs": false,
     "module": "commonjs",
     "outDir": "./dist",
+    "declaration": true,
+    "declarationMap": true,
 		"sourceMap": true,
-		"sourceRoot": "."
+		"sourceRoot": ".",
+    "strict": true
   },
   "include": [
     "bin",

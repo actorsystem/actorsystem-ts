@@ -1,7 +1,7 @@
 
 import {connect, Connection, Channel} from 'amqplib';
 
-import * as waitPort from 'wait-port';
+const waitPort = require('wait-port')
 
 import * as url from 'url';
 
@@ -14,7 +14,7 @@ var connecting = false;
 
 require('dotenv').config();
 
-const AMQP_URL = process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672/';
+const AMQP_URL: string = process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672/';
 
 export async function publish(exchange: string, routingkey: string, message: any) {
 
@@ -40,7 +40,7 @@ export async function getConnection() {
 
     await waitPort({
       host: parsed.hostname,
-      port: parseInt(parsed.port),
+      port: parseInt(String(parsed.port)),
       output: 'silent'
     });
 
@@ -71,7 +71,7 @@ export async function getChannel() {
 
 }
   
-function wait(ms) {
+function wait(ms: number) {
 
   return new Promise((resolve, reject) => {
 
