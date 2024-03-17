@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11,8 +30,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.startActorsDirectory = exports.requireHandlersDirectory = exports.Joi = exports.delay = exports.publish = exports.getChannel = exports.getConnection = exports.log = exports.Actor = exports.jToB = exports.init = exports.startActors = exports.getDirectories = exports.requireDirectory = exports.events = void 0;
 require('dotenv').config();
-const fs = require("fs");
-const path = require("path");
+const fs_1 = require("fs");
+const path_1 = require("path");
 const lodash_1 = require("lodash");
 const actor_1 = require("./actor");
 Object.defineProperty(exports, "Actor", { enumerable: true, get: function () { return actor_1.Actor; } });
@@ -24,21 +43,21 @@ Object.defineProperty(exports, "getChannel", { enumerable: true, get: function (
 Object.defineProperty(exports, "publish", { enumerable: true, get: function () { return amqp_1.publish; } });
 var events_1 = require("./events");
 Object.defineProperty(exports, "events", { enumerable: true, get: function () { return events_1.events; } });
-const Joi = require("@hapi/joi");
+const Joi = __importStar(require("@hapi/joi"));
 exports.Joi = Joi;
-const delay = require("delay");
+const delay = __importStar(require("delay"));
 exports.delay = delay;
 var require_1 = require("./require");
 Object.defineProperty(exports, "requireDirectory", { enumerable: true, get: function () { return require_1.requireDirectory; } });
 function getDirectories(source) {
-    return fs.readdirSync(source, { withFileTypes: true })
+    return (0, fs_1.readdirSync)(source, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
         .map(dirent => dirent.name);
 }
 exports.getDirectories = getDirectories;
 function startActors(actorNames = []) {
     actorNames.map(actorName => {
-        return require(path.join(process.cwd(), 'actors', actorName, 'actor.ts'));
+        return require((0, path_1.join)(process.cwd(), 'actors', actorName, 'actor.ts'));
     })
         .forEach(actor => actor.start());
 }
@@ -79,10 +98,10 @@ function startActorsDirectory(directoryIndexPath, opts = {
         let directories = getDirectories(directoryIndexPath);
         var tmpHandle;
         let actors = directories.map(directory => {
-            var dir = path.join(directoryIndexPath, directory);
-            return fs.readdirSync(dir).reduce((actorFile, file) => {
+            var dir = (0, path_1.join)(directoryIndexPath, directory);
+            return (0, fs_1.readdirSync)(dir).reduce((actorFile, file) => {
                 if (file === 'actor.ts') {
-                    let a = path.join(dir, file);
+                    let a = (0, path_1.join)(dir, file);
                     return {
                         path: a,
                         name: directory

@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,23 +28,45 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getChannel = exports.getConnection = exports.publish = void 0;
+exports.getChannel = exports.getConnection = exports.publishBuffer = exports.publish = exports.defaultExchangeType = exports.defaultExchange = void 0;
 const amqplib_1 = require("amqplib");
 const waitPort = require('wait-port');
-const url = require("url");
+const url = __importStar(require("url"));
 const logger_1 = require("./logger");
 var connection;
 var channel;
 var connecting = false;
 require('dotenv').config();
+exports.defaultExchange = process.env.AMQP_EXCHANGE ? String(process.env.AMQP_EXCHANGE) : 'default';
+exports.defaultExchangeType = 'direct';
 const AMQP_URL = process.env.AMQP_URL || 'amqp://guest:guest@127.0.0.1:5672/';
-function publish(exchange, routingkey, message) {
+function publish(a, b, c) {
     return __awaiter(this, void 0, void 0, function* () {
         let channel = yield getChannel();
+        var exchange, routingkey;
+        var message;
+        if (typeof b === 'object') {
+            // no exchange provided, use default
+            exchange = exports.defaultExchange;
+            routingkey = a;
+            message = b;
+        }
+        else {
+            exchange = a;
+            routingkey = b;
+            message = c;
+        }
         return channel.publish(exchange, routingkey, Buffer.from(JSON.stringify(message)));
     });
 }
 exports.publish = publish;
+function publishBuffer(routingkey, buffer) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return channel.publish(exports.defaultExchange, routingkey, buffer);
+    });
+}
+exports.publishBuffer = publishBuffer;
+;
 function getConnection() {
     return __awaiter(this, void 0, void 0, function* () {
         while (connecting) {
